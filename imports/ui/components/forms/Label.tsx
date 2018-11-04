@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../../theme';
+import { Theme } from '../../theme';
 
 type Props = {
-  readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
+  readonly children: React.ReactNode,
   readonly error?: boolean,
-  children: React.ReactNode,
+  readonly theme?: Theme,
 } & React.HTMLProps<HTMLLabelElement>;
 
 const style = (props: Partial<Props>) => css`
@@ -15,7 +14,7 @@ const style = (props: Partial<Props>) => css`
 `;
 
 const Element: React.SFC<Props> = (props: Props) => {
-  const { theme, variant, children, error, ...rest} = props;
+  const { children, error, theme, ...rest} = props;
   return (
     <label className={style(props)} {...rest}>{children}</label>
   );

@@ -51,6 +51,11 @@ const style = (props: Partial<Props>) => css`
   outline: none;
   user-select: none;
 
+  & path {
+    fill: currentColor;
+    stroke: currentColor;
+  }
+
   ${mq.sm(css`
     ${typeof props.height === 'object' && props.height.sm && `
       height: ${getSize(props.height.sm)};

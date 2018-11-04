@@ -1,17 +1,16 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../../theme';
+import { Theme } from '../../theme';
 
 // components
 import { FieldArray, FieldProps } from 'formik';
 import { Element } from './CheckboxField';
 
 type Props = {
-  readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
   readonly className?: any,
-  options: Array<{id: string, label: string}>,
+  readonly options: Array<{id: string, label: string}>,
+  readonly theme?: Theme,
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 type PropsWithContext = Props & FieldProps<any>;

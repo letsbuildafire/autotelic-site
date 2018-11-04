@@ -4,7 +4,7 @@ import * as React from 'react';
 import { connect, FieldAttributes, FormikContext } from 'formik';
 
 type Props = {
-  children: React.ReactElement<any>,
+  readonly children: React.ReactElement<any>,
   readonly show: (formik: FormikContext<any>) => boolean,
 };
 

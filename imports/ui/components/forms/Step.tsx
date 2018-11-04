@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css } from 'emotion';
-import { mq } from '../../theme/media';
+import { mq } from '../../theme';
 
 // helpers
 import { FormikProps } from 'formik';
@@ -13,11 +13,11 @@ export type Ref = HTMLElement;
 export type Props = {
   readonly className?: string,
   readonly formik?: FormikProps<any>,
-  readonly render: (ref: React.Ref<Ref>, formik?: FormikProps<any>) => React.ReactNode,
-  readonly onMount?: (el: HTMLElement) => void,
   readonly onAppear?: (el: HTMLElement, cb: () => void) => void,
   readonly onEnter?: (el: HTMLElement, direction: boolean, cb: () => void) => void,
   readonly onLeave?: (el: HTMLElement, direction: boolean, cb: () => void) => void,
+  readonly onMount?: (el: HTMLElement) => void,
+  readonly render: (ref: React.Ref<Ref>, formik?: FormikProps<any>) => React.ReactNode,
   readonly schema?: any, // expects a Yup validation schema
   readonly title?: string,
   readonly transitionDirection?: boolean, // false = backward, true = forward

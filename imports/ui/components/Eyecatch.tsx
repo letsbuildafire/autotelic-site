@@ -1,18 +1,17 @@
 import * as  React from 'react';
-import { withTheme, OptionalThemeProps } from 'emotion-theming';
+import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../theme';
+import { Theme } from '../theme';
 
 export type Ref = SVGSVGElement;
 
 type Props = {
-  readonly innerRef?: React.Ref<Ref>,
-  readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
   readonly className?: string,
+  readonly innerRef?: React.Ref<Ref>,
   readonly onAppear?: (cb: () => void) => void,
   readonly onEnter?: (cb: () => void) => void,
   readonly onLeave?: (cb: () => void) => void,
+  readonly theme?: Theme,
 };
 
 const style = (props: Partial<Props>) => css`
@@ -30,7 +29,7 @@ const style = (props: Partial<Props>) => css`
 `;
 
 const Element: React.SFC<Props> = (props: Props, context) => {
-  const { innerRef, theme, variant, className, ...rest } = props;
+  const { innerRef, theme, className, ...rest } = props;
   return (
     <svg className={style(props)} ref={innerRef} xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 1000">
       <linearGradient id="grad1" x1="3174.82" x2="3553.37" y1="256.29" y2="256.29" gradientTransform="matrix(-.8635 -.4986 -.4987 .8638 3474.649 1987.742)" gradientUnits="userSpaceOnUse"><stop offset="0" stopColor="#ed5794"/><stop offset=".24" stopColor="#ff5d8c"/><stop offset=".51" stopColor="#fc7040"/><stop offset=".76" stopColor="#ff991e"/><stop offset="1" stopColor="#ffd135"/></linearGradient>

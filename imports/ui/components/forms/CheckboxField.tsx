@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../../theme';
+import { Theme } from '../../theme';
 
 // components
 import { Field, FieldProps } from 'formik';
@@ -9,10 +9,9 @@ import { FieldFeedback } from './FieldFeedback';
 import { Label } from './Label';
 
 type Props = {
-  readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
-  readonly label?: string,
   readonly className?: string,
+  readonly label?: string,
+  readonly theme?: Theme,
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 type PropsWithContext = Props & FieldProps<any>;
@@ -83,7 +82,7 @@ export class Element extends React.PureComponent<PropsWithContext> {
   public static displayName = 'CheckboxInput';
 
   render() {
-    const { theme, variant, id, form, field, label } = this.props;
+    const { id, field, form, label, theme } = this.props;
     const invalid = !!form.errors[field.name];
 
     return (

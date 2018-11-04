@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../../theme';
+import { Theme } from '../../theme';
 
 // helpers
 import { TimelineLite } from 'gsap';
@@ -20,7 +20,6 @@ type Props = {
   readonly min: number,
   readonly theme?: Theme,
   readonly unit?: string,
-  readonly variant?: ThemeVariant,
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 type PropsWithContext = Props & FieldProps<any>;
@@ -30,7 +29,7 @@ const style = ({ field, ...props }: Partial<PropsWithContext>) => css`
   margin-bottom: 0.75rem;
   padding-top: 1rem;
 
-  color: ${props.theme.color[props.variant].heading};
+  color: ${props.theme.color.heading};
 `;
 
 const valueStyle = css`

@@ -4,13 +4,13 @@ import { map } from 'lodash';
 
 // helpers
 import * as TransitionGroupPlus from 'react-transition-group-plus';
+import { Formik, FormikActions, withFormik, FormikProps } from 'formik';
 
 // components
-import { Formik, FormikActions, withFormik, FormikProps } from 'formik';
-import { Column, Row } from '../grid';
-import { Props as StepProps } from './Step';
 import { FlatButton } from '../buttons';
+import { Column, Row } from '../grid';
 import { Dots } from '../pagination';
+import { Props as StepProps } from './Step';
 
 type Step = React.ReactElement<StepProps>;
 
@@ -118,8 +118,8 @@ export class Wizard extends React.Component<Props, State> {
   }
 
   render() {
-    const { initialValues, children } = this.props;
-    const { step, direction } = this.state;
+    const { children, initialValues } = this.props;
+    const { direction, step } = this.state;
 
     const steps = React.Children.toArray(children);
 

@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../theme';
+import { mq, Theme } from '../theme';
 
 // helpers
-import { mq } from '../theme/media';
 import { FLUID_CONTAINER } from '../theme/grid';
 
 // components
@@ -28,53 +27,41 @@ export type Props = {
   readonly index: number,
   readonly innerRef?: React.Ref<Ref>,
   readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
 };
 
 const style = (props: Partial<Props>) => css`
   ${FLUID_CONTAINER}
   flex: 1 1 auto;
 
-  min-height: 100vh;
-  overflow: hidden;
+  color: ${props.theme.color.body};
 
-  padding-bottom: 60px;
+  padding-bottom: ${props.theme.grid.outerMargin * 2}px;
+  overflow: hidden;
 
   ${props.className}
 `;
 
-const secondaryStyle = css`
-  position: relative;
-`;
-
-const primaryStyle = (props: Partial<Props>) => css`
+const primaryStyle = css`
   max-width: 480px;
 `;
 
-const iconStyle = css`
-  height: 130vmin;
-  width: 130vmin;
-  min-height: 400px;
-  min-width: 400px;
+const secondaryStyle = css`
+  position: relative;
 
-  position: absolute;
-  top: 50%;
-  left: 0;
+  height: 100%;
+  width: 100%;
+`;
 
-  z-index: -1;
-  transform: translate3d(-10%, -50%, 0);
-
-  ${mq.sm(css``)}
+const contentStyle = css`
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 `;
 
 class Element extends React.PureComponent<Props> {
   public static displayName = 'Section';
-  public static defaultProps: Partial<Props> = {
-    variant: 'dark',
-  };
 
   render() {
-    const { innerRef, theme, variant, className, index, children, ...rest } = this.props;
+    const { children, className, index, innerRef, theme, ...rest } = this.props;
     const { icon, heading, subheading, content, action } = children;
 
     return (
@@ -88,11 +75,11 @@ class Element extends React.PureComponent<Props> {
           }}
           columns={{
             xs: `auto`,
-            sm: `0.25fr auto 2fr`,
+            sm: `5% auto 1fr`,
           }}
           areas={{
             xs: `
-              "."
+              "secondary"
               "primary"
             `,
             sm: `
@@ -108,7 +95,7 @@ class Element extends React.PureComponent<Props> {
           }}
           align="center"
           justify="space-between"
-          justifyContent="start"
+          justifyContent="center"
           {...rest}
         >
         <Item
@@ -121,16 +108,21 @@ class Element extends React.PureComponent<Props> {
             sm: 1
           }}
         >
-          {icon && React.cloneElement<SectionIconProps>(icon, {className: iconStyle})}
+          {icon}
         </Item>
         <Item
-          className={primaryStyle(this.props)}
+          className={primaryStyle}
           area="primary"
-          align="center"
+          align={{
+            xs: 'end',
+            sm: 'center',
+          }}
         >
           {heading}
           {subheading}
-          {content}
+          <div className={contentStyle}>
+            {content}
+          </div>
           {action}
         </Item>
     </Grid>

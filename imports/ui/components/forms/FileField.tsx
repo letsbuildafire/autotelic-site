@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../../theme';
+import { Theme, } from '../../theme';
 
 // helpers
 import * as TransitionGroupPlus from 'react-transition-group-plus';
@@ -17,7 +17,6 @@ type Props = {
   readonly button?: string,
   readonly label?: string,
   readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 const style = (props: Partial<Props>) => css`
@@ -88,7 +87,6 @@ class Element extends React.PureComponent<Props> {
       label,
       name,
       theme,
-      variant,
       ...rest
     } = this.props;
 

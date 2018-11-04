@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../../theme';
+import { mq, Theme } from '../../theme';
 import { Location } from 'history';
 
 // helpers
 import * as TransitionGroupPlus from 'react-transition-group-plus';
 import { Transitionable } from '../../helpers/Transitionable';
-import { mq } from '../../theme/media';
 
 // components
 import { Item } from '../grid';
@@ -21,7 +20,6 @@ export type Props = {
   readonly defaultOpen?: boolean,
   readonly location: Location,
   readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
 };
 
 type State = Readonly<typeof initialState>;
@@ -31,8 +29,6 @@ const initialState = {
 
 const style = (props: Partial<Props>) => css`
   display: flex;
-  padding-left: ${props.theme.grid.gutterWidth / 2}px;
-  padding-right: ${props.theme.grid.gutterWidth / 2}px;
   overflow: visible;
 
   flex-direction: column;
@@ -43,14 +39,18 @@ const style = (props: Partial<Props>) => css`
 
 const toggleStyle = (props: Partial<Props>) => css`
   display: block;
-  width: 36px;
+  width: 32px;
   height: 22px;
-
-  align-self: flex-end;
 
   position: relative;
   margin-top: ${props.theme.grid.gutterWidth / 2}px;
   margin-bottom: ${props.theme.grid.gutterWidth / 2}px;
+
+  color: black;
+
+  &:hover {
+    color: black;
+  }
 
   span {
     background-color: currentColor;
@@ -80,7 +80,7 @@ const toggleStyle = (props: Partial<Props>) => css`
   `)}
 `;
 
-class Element extends React.Component<Props, State> {
+class Element extends React.PureComponent<Props, State> {
   public static displayName = 'Menu';
   public static defaultProps: Partial<Props> = {
     defaultOpen: false,
@@ -137,7 +137,10 @@ class Element extends React.Component<Props, State> {
         component={Item}
         area="secondary"
         align="center"
-        justify="start"
+        justify={{
+          xs: 'end',
+          sm: 'start',
+        }}
       >
         <a className={toggleStyle(this.props)} onClick={this.toggleMenu}>
           <span></span>

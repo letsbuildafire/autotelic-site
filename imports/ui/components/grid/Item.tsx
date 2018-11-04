@@ -22,7 +22,6 @@ export type Props = {
   readonly order?: {[key in Breakpoints]?: number} | number,
   readonly row?: {[key in Breakpoints]?: string} | string,
   readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
 };
 
 const atBreakpoint = (breakpoint: Breakpoints, props: Partial<Props>) => css`

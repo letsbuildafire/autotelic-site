@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { mq } from '../theme/media';
-import { Theme, ThemeVariant } from '../theme';
+import { mq, Theme } from '../theme';
 
 export type Ref = HTMLHeadingElement;
 
@@ -11,11 +10,10 @@ export type Props = {
   readonly className?: string,
   readonly innerRef?: React.Ref<Ref>,
   readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
 };
 
 const style = (props: Partial<Props>) => css`
-  color: ${props.theme.color[props.variant].subheading};
+  color: ${props.theme.color.subheading};
 
   font-size: 1.875rem;
   font-weight: normal;
@@ -37,8 +35,5 @@ const Element = React.forwardRef<Ref, Props>((props: Props, ref) => (
   <h2 ref={props.innerRef || ref} className={style(props)}>{props.children}</h2>
 ));
 Element.displayName = 'Subheading';
-Element.defaultProps = {
-  variant: 'dark',
-};
 
 export const Subheading = withTheme<Props, Theme>(Element);

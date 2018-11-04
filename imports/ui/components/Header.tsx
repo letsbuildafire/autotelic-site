@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../theme';
+import { mq, Theme } from '../theme';
 
 // helpers
-import { mq } from '../theme/media';
 import { FLUID_CONTAINER } from '../theme/grid';
 
 // elements
@@ -14,14 +13,15 @@ type Props = {
   readonly children?: React.ReactNode,
   readonly className?: string,
   readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
 };
 
 const style = (props: Partial<Props>) => css`
   ${FLUID_CONTAINER}
-  background: rgba(255, 255, 255, 0.95);
 
-  height: 64px;
+  background: rgba(255, 255, 255, 0.95);
+  color: ${props.theme.color.body};
+
+  height: 48px;
   overflow: visible;
 
   z-index: 5000;
@@ -32,6 +32,8 @@ const style = (props: Partial<Props>) => css`
 
   ${mq.sm(css`
     background: none;
+
+    height: 64px;
   `)}
 
   ${props.className}
@@ -39,12 +41,9 @@ const style = (props: Partial<Props>) => css`
 
 class Element extends React.PureComponent<Props> {
   public static displayName = 'Header';
-  public static defaultProps = {
-    variant: 'dark' as ThemeVariant,
-  };
 
   render() {
-    const { children, theme, variant, className, ...rest } = this.props;
+    const { children, className, theme, ...rest } = this.props;
 
     return (
       <Grid
@@ -52,7 +51,7 @@ class Element extends React.PureComponent<Props> {
         children={children}
         className={style(this.props)}
         columns={{
-          xs: 'auto 1fr',
+          xs: '1fr 64px',
           sm: '5% auto 1fr'
         }}
         areas={{

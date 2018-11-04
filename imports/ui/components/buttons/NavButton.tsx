@@ -1,34 +1,34 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../../theme';
+import { Theme } from '../../theme';
 
 // components
 import { NavLink, NavLinkProps } from 'react-router-dom';
 import { style as button, Props as ButtonProps } from './Button';
 
-export type Props = {
-  readonly children: React.ReactNode,
-  readonly className?: string,
-  readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
-} & NavLinkProps;
+export type Props = {} & ButtonProps & NavLinkProps;
 
 const style = (props: Partial<Props>) => css`
-  ${button({})}
+  ${button(props)}
+
   ${props.className}
 `;
 
-const Element: React.SFC<Props> = (props: Props, context) => {
-  const { className, children, to, strict, exact } = props;
-  return (
-    <NavLink className={style(props)} to={to} strict={strict} exact={exact}>{children}</NavLink>
-  );
-};
-Element.displayName = 'NavButton';
+class Element extends React.PureComponent<Props> {
+  public static displayName = 'NavButton';
+  public static defaultProps = {
+    color: 'teal',
+    exact: true,
+    strict: false,
+  };
+
+  render() {
+    const { children, className, exact, strict, to } = this.props;
+    return (
+      <NavLink className={style(this.props)} to={to} strict={strict} exact={exact}>{children}</NavLink>
+    );
+  }
+}
 
 export const NavButton = withTheme<Props, Theme>(Element);
-NavButton.defaultProps = {
-  strict: false,
-  exact: true,
-};

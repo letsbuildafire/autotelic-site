@@ -7,7 +7,6 @@ import * as Yup from 'yup';
 // helpers
 import { TweenLite, TimelineLite } from 'gsap';
 import * as TransitionGroupPlus from 'react-transition-group-plus';
-import { Transitionable } from '../helpers/Transitionable';
 
 // components
 import { Page, Ref as PageRef } from '../components/Page';
@@ -17,7 +16,6 @@ import { SectionIcon } from '../components/icons';
 import { Heading } from '../components/Heading';
 import { Subheading } from '../components/Subheading';
 import { Button, NavButton } from '../components/buttons';
-import { Eyecatch, Ref as EyecatchRef } from '../components/Eyecatch';
 
 // form components
 import {
@@ -47,6 +45,11 @@ type Props = {
 
 const style = (props: Partial<Props>) => css`
   justify-content: flex-start;
+
+  background: linear-gradient(32deg, magenta, chartreuse);
+  background-size: 300% 300%;
+  background-position-x: 0%;
+  background-position-y: 50%;
 `;
 
 const sectionStyle = (props: Partial<Props>) => css`
@@ -77,7 +80,6 @@ const required = value => (value ? undefined : 'Required');
 
 export class ContactPage extends React.Component<Props> {
   private ref = React.createRef<PageRef>();
-  private eyecatch = React.createRef<EyecatchRef>();
   private defaultValues = {
     budget: 10000,
     timeframe: 4,
@@ -85,7 +87,7 @@ export class ContactPage extends React.Component<Props> {
     email: 'test@test.com',
     phone: '306 777 5555',
     method: false,
-    timescale: false,
+    timey: false,
     services: [],
     comments: '',
     files: [],
@@ -100,43 +102,37 @@ export class ContactPage extends React.Component<Props> {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  componentDidMount() {
-    TweenLite.set(this.ref.current, {
-      opacity: 0,
-    });
-  }
-
   componentWillAppear(cb: () => void) {
-    TweenLite.fromTo(this.ref.current, 0.3, {
-      opacity: 0,
-      y: '20px',
+    TweenLite.fromTo(this.ref.current.children, 0.3, {
+      y: -20,
     }, {
-      opacity: 1,
       y: 0,
-      onComplete: cb
+      clearProps: 'translate',
+      onComplete: cb,
     });
   }
 
   componentWillEnter(cb: () => void) {
-    TweenLite.fromTo(this.ref.current, 0.3, {
+    TweenLite.fromTo(this.ref.current.children, 0.3, {
       opacity: 0,
-      y: '20px',
+      y: -20,
     }, {
       opacity: 1,
       y: 0,
-      onComplete: cb
+      clearProps: 'translate, opacity',
+      onComplete: cb,
     });
   }
 
   componentWillLeave(cb: () => void) {
     TweenLite.set(this.ref.current, {
       position: 'absolute',
-      zIndex: 1,
+      zIndex: 2,
     });
 
-    TweenLite.to(this.ref.current, 0.3, {
+    TweenLite.to(this.ref.current.children, 0.3, {
       opacity: 0,
-      y: '-20px',
+      y: 20,
       onComplete: cb,
     });
   }
@@ -158,63 +154,10 @@ export class ContactPage extends React.Component<Props> {
         childFactory={child => child}
       >
         {matchPath(location.pathname, {path: '/contact/', strict: false, exact: true}) && (
-          <Transitionable
-            onMount={() => {
-              TweenLite.set(this.eyecatch.current, {
-                scale: 1.2,
-                opacity: 0,
-              });
-            }}
-            onAppear={() => {
-              TweenLite.to(this.eyecatch.current, 0.3, {
-                scale: 1,
-                opacity: 1,
-                clearProps: 'transform, opacity',
-              });
-            }}
-            onEnter={cb => {
-              TweenLite.fromTo(this.eyecatch.current, 0.3, {
-                scale: 1.2,
-                opacity: 0,
-              }, {
-                scale: 1,
-                opacity: 1,
-                clearProps: 'transform, opacity',
-                onComplete: cb,
-              });
-            }}
-            onLeave={cb => {
-              TweenLite.to(this.eyecatch.current, 0.3, {
-                scale: 1.2,
-                opacity: 0,
-                delay: 0.45,
-                clearProps: 'transform, opacity',
-                onComplete: cb,
-              });
-            }}
-            render={state => (
-              <Eyecatch
-                innerRef={this.eyecatch}
-                className={css`
-                  z-index: -1;
-                  position: absolute;
-                  top: 50%;
-                  left: 50%;
-
-                  height: auto;
-                  width: 350vw;
-
-                  transform: translate3d(-45%, -60%, 0);
-                  transform-origin: 50%, 100%;
-                  `}
-                />
-          )} />
-        )}
-        {matchPath(location.pathname, {path: '/contact/', strict: false, exact: true}) && (
-          <Section index={0} variant="light" className={sectionStyle(this.props)}>
+          <Section index={0} className={sectionStyle(this.props)}>
             {{
-              heading: <Heading variant="light">Contact Us</Heading>,
-              subheading: <Subheading variant="light">Lorem ipsum dolor sit, amet consectetur adipisicing elit.</Subheading>,
+              heading: <Heading>Contact Us</Heading>,
+              subheading: <Subheading>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</Subheading>,
               content: (
                 <div className={css`
                   margin-top: 2rem;
@@ -461,19 +404,18 @@ const TimeframeStep = (
         </Item>
         <Item area="primary">
           <Heading>Yo</Heading>
-          <Subheading>When do you want it dog?</Subheading>
+          <Subheading>When do you want it dawg?</Subheading>
           <RangeField
-            variant="light"
             id="timeframe"
             name="timeframe"
-            unit={ctx.values.timescale ? 'months' : 'weeks'}
-            min={ctx.values.timescale ? 2 : 4}
-            max={ctx.values.timescale ? 12 : 12}
+            unit={ctx.values.timey ? 'months' : 'weeks'}
+            min={ctx.values.timey ? 2 : 4}
+            max={ctx.values.timey ? 12 : 12}
             step={1}
           />
           <ToggleField
-            id="timescale"
-            name="timescale"
+            id="timey"
+            name="timey"
             labelOff="weeks"
             labelOn="months"
           />
@@ -527,7 +469,7 @@ const BudgetStep = (
         </Item>
         <Item area="primary">
           <Heading>Yo</Heading>
-          <Subheading>How much money dog?</Subheading>
+          <Subheading>How much money dawg?</Subheading>
           <RangeField
             id="budget"
             name="budget"
@@ -563,7 +505,7 @@ const CommentsStep = (
             id="comments"
             name="comments"
             rows={5}
-            columns={40}
+            cols={40}
             placeholder="Comments/questions..."
           />
           <FileField

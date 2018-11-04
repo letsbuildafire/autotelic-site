@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { debounce } from 'lodash';
 import { ThemeProvider } from 'emotion-theming';
-import { theme } from '../theme';
+import { themes, ThemeVariant } from '../theme';
 import { Breakpoints, getBreakpoint } from '../theme/media';
+import { Location } from 'history';
 
 // containers
 import { Header } from '../components/Header';
@@ -10,13 +11,13 @@ import { Content } from '../components/Content';
 
 // components
 import { Menu } from '../components/navigation/Menu';
+import { MenuIcon } from '../components/icons';
 import {
   BrowserRouter as Router,
   NavLink,
   Route,
   matchPath
 } from 'react-router-dom';
-import { MenuIcon } from '../components/icons';
 
 // icon data
 import {
@@ -49,6 +50,7 @@ export class AppContainer extends React.Component<Props, State> {
   constructor(props) {
     super(props);
 
+    this.getTheme = this.getTheme.bind(this);
     this.setViewport = this.setViewport.bind(this);
   }
 
@@ -61,6 +63,13 @@ export class AppContainer extends React.Component<Props, State> {
 
   componentWillUnmount() {
       window.removeEventListener('resize', this.setViewport);
+  }
+
+  getTheme(location: Location) {
+    if (matchPath(location.pathname, {path: '/services', strict: false, exact: false})) {
+      return themes.dark;
+    }
+    return themes.light;
   }
 
   setViewport() {
@@ -78,11 +87,10 @@ export class AppContainer extends React.Component<Props, State> {
   }
 
   render() {
-
     return (
-      <ThemeProvider theme={theme}>
-        <Router>
-          <Route render={({ history, location }) => (
+      <Router>
+        <Route render={({ history, location }) => (
+          <ThemeProvider theme={this.getTheme(location)}>
             <>
               <Header>
                 <Branding />
@@ -108,9 +116,9 @@ export class AppContainer extends React.Component<Props, State> {
                 {matchPath(location.pathname, {path: '/contact', strict: false, exact: false}) && (<ContactPage history={history} location={location} /> )}
               </Content>
             </>
-          )}/>
-        </Router>
-      </ThemeProvider>
+          </ThemeProvider>
+        )}/>
+      </Router>
     );
   }
 }

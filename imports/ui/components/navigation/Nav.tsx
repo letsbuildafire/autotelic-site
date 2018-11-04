@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../../theme';
+import { mq, Theme } from '../../theme';
 
 // components
 import { MenuItem } from './types';
-import { mq } from '../../theme/media';
 
 export type Ref = HTMLElement;
 
@@ -14,7 +13,6 @@ type Props = {
   readonly className?: string,
   readonly innerRef?: React.Ref<Ref>,
   readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
 };
 
 const style = (props: Partial<Props>) => css`
@@ -23,10 +21,6 @@ const style = (props: Partial<Props>) => css`
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-
-  position: fixed;
-  top: 0;
-  left: 0;
 
   display: flex;
   display: none;
@@ -39,8 +33,6 @@ const style = (props: Partial<Props>) => css`
     flex-direction: row;
 
     position: relative;
-    top: auto;
-    left: auto;
 
     display: flex;
     height: auto;
@@ -59,9 +51,11 @@ const linkStyle = (props: Partial<Props>) => css`
 
   padding: ${props.theme.grid.gutterWidth / 2}px 0;
 
+  color: ${props.theme.color.body};
   font-size: 0.875rem;
   text-align: center;
-  color: darkslategray;
+
+  transition: color 300ms ease-out;
 
   ${mq.sm(css`
     flex-direction: row;

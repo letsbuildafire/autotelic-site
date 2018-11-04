@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { History, Location } from 'history';
 import { css } from 'emotion';
+import { themes } from '../theme';
 import { debounce, findIndex, map } from 'lodash';
 import { matchPath } from 'react-router';
 
 // helpers
 import { TweenLite, TimelineLite } from 'gsap';
 import * as TransitionGroupPlus from 'react-transition-group-plus';
-import { Transitionable } from '../helpers/Transitionable';
 
 // components
 import { Page, Ref as PageRef } from '../components/Page';
@@ -17,7 +17,6 @@ import { Heading } from '../components/Heading';
 import { Subheading } from '../components/Subheading';
 import { NavButton } from '../components/buttons';
 import { Dots } from '../components/pagination';
-import { Eyecatch, Ref as EyecatchRef } from '../components/Eyecatch';
 
 // icon data
 import {
@@ -36,6 +35,11 @@ type Props = {
 
 const style = (props: Partial<Props>) => css`
   justify-content: flex-start;
+
+  background: linear-gradient(32deg, greenyellow, lightseagreen, red);
+  background-size: 500% 500%;
+  background-position-x: 0%;
+  background-position-y: 50%;
 `;
 
 const sectionStyle = (props: Partial<Props>) => css`
@@ -52,10 +56,6 @@ const dotsStyle = (props: Partial<Props>, state: State) => css`
   left: 0;
 
   flex: 0 0 auto;
-
-  ${state.active > 0 && `
-    color: red;
-  `}
 `;
 
 type State = {
@@ -74,7 +74,6 @@ export class ServicesPage extends React.Component<Props, State> {
     ],
   };
   private ref = React.createRef<PageRef>();
-  private eyecatch = React.createRef<EyecatchRef>();
 
   constructor(props: Props) {
     super(props);
@@ -89,55 +88,58 @@ export class ServicesPage extends React.Component<Props, State> {
     };
   }
 
-  componentDidMount() {
-    TweenLite.set(this.ref.current, {
-      opacity: 0,
-    });
-  }
-
   componentDidUpdate(prevProps: Props, prevState: State) {
     const { sections, location } = this.props;
     const { location: from } = prevProps;
     const { active: previous } = prevState;
 
+    const active = this.getSectionIndex(location.pathname);
+
+    if (this.ref.current) {
+      TweenLite.to(this.ref.current, 1, {
+        backgroundPositionX: `${(active + 1) / sections.length * 100}%`,
+      });
+    }
+
     if (location.pathname !== from.pathname) {
       this.setState({
-        active: this.getSectionIndex(location.pathname),
+        active,
         previous,
       });
     }
   }
 
   componentWillAppear(cb: () => void) {
-    TweenLite.fromTo(this.ref.current, 0.3, {
-      opacity: 0,
-      y: '20px',
+    TweenLite.fromTo(this.ref.current.children, 0.3, {
+      y: 20,
     }, {
-      opacity: 1,
       y: 0,
-      onComplete: cb
+      clearProps: 'translate',
+      onComplete: cb,
     });
   }
 
   componentWillEnter(cb: () => void) {
-    TweenLite.fromTo(this.ref.current, 0.3, {
+    TweenLite.fromTo(this.ref.current.children, 0.3, {
       opacity: 0,
-      y: '20px',
+      y: -20,
     }, {
       opacity: 1,
       y: 0,
-      onComplete: cb
+      clearProps: 'translate, opacity',
+      onComplete: cb,
     });
   }
 
   componentWillLeave(cb: () => void) {
     TweenLite.set(this.ref.current, {
       position: 'absolute',
+      zIndex: 2,
     });
 
-    TweenLite.to(this.ref.current, 0.3, {
+    TweenLite.to(this.ref.current.children, 0.3, {
       opacity: 0,
-      y: '-20px',
+      y: 20,
       onComplete: cb,
     });
   }
@@ -182,79 +184,26 @@ export class ServicesPage extends React.Component<Props, State> {
         })}
       >
         {matchPath(location.pathname, {path: sections[0].path, strict: false, exact: true}) && (
-          <Transitionable
-            onMount={() => {
-              TweenLite.set(this.eyecatch.current, {
-                scale: 1.2,
-                opacity: 0,
-              });
-            }}
-            onAppear={() => {
-              TweenLite.to(this.eyecatch.current, 0.3, {
-                scale: 1,
-                opacity: 1,
-                clearProps: 'transform, opacity',
-              });
-            }}
-            onEnter={cb => {
-              TweenLite.fromTo(this.eyecatch.current, 0.3, {
-                scale: 1.2,
-                opacity: 0,
-              }, {
-                scale: 1,
-                opacity: 1,
-                clearProps: 'transform, opacity',
-                onComplete: cb,
-              });
-            }}
-            onLeave={cb => {
-              TweenLite.to(this.eyecatch.current, 0.3, {
-                scale: 1.2,
-                opacity: 0,
-                delay: 0.45,
-                clearProps: 'transform, opacity',
-                onComplete: cb,
-              });
-            }}
-            render={state => (
-              <Eyecatch
-                innerRef={this.eyecatch}
-                className={css`
-                  z-index: -1;
-                  position: absolute;
-                  top: 50%;
-                  left: 50%;
-
-                  height: auto;
-                  width: 350vw;
-
-                  transform: translate3d(-45%, -60%, 0);
-                  transform-origin: 50%, 100%;
-                  `}
-                />
-          )} />
-        )}
-        {matchPath(location.pathname, {path: sections[0].path, strict: false, exact: true}) && (
           <SwipeableSection
             index={0}
-            variant="light"
             className={sectionStyle(this.props)}
             onSwipingLeft={this.changeSection(sections[1].path)}
             onMount={sectionMount}
             onAppear={sectionAppear}
             onEnter={sectionEnter}
             onLeave={sectionLeave}
+            theme={themes.dark}
           >
             {{
-              heading: <Heading variant="light">Services</Heading>,
-              subheading: <Subheading variant="light">Lorem ipsum dolor sit, amet consectetur adipisicing elit.</Subheading>,
+              heading: <Heading theme={themes.dark}>Services</Heading>,
+              subheading: <Subheading theme={themes.dark}>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</Subheading>,
               content: (
                   <p>
                     Lorem, ipsum dolor sit amet consectetur! Lorem, ipsum dolor
                     sit amet consectetur. Lorem, ipsum dolor sit amet...
                   </p>
               ),
-              action: <NavButton to={sections[1].path} exact>User Experience</NavButton>
+              action: <NavButton color="chartreuse" to={sections[1].path} exact>User Experience</NavButton>
             }}
           </SwipeableSection>
         )}
@@ -268,18 +217,19 @@ export class ServicesPage extends React.Component<Props, State> {
             onAppear={sectionAppear}
             onEnter={sectionEnter}
             onLeave={sectionLeave}
+            theme={themes.dark}
           >
             {{
-              icon: <SectionIcon animationData={experienceData}/>,
-              heading: <Heading>User Experience</Heading>,
-              subheading: <Subheading>Lorem ipsum dolor sit, amet consectetur.</Subheading>,
+              icon: <SectionIcon theme={themes.light} animationData={experienceData}/>,
+              heading: <Heading theme={themes.dark}>User Experience</Heading>,
+              subheading: <Subheading theme={themes.dark}>Lorem ipsum dolor sit, amet consectetur.</Subheading>,
               content: (
                 <p>
                   Lorem, ipsum dolor sit amet consectetur! Lorem, ipsum dolor
                   sit amet consectetur. Lorem, ipsum dolor sit amet...
                 </p>
               ),
-              action: <NavButton to={sections[2].path} exact>Creative</NavButton>
+              action: <NavButton color="chartreuse" to={sections[2].path} exact>Creative</NavButton>
             }}
           </SwipeableSection>
         )}
@@ -293,18 +243,19 @@ export class ServicesPage extends React.Component<Props, State> {
             onAppear={sectionAppear}
             onEnter={sectionEnter}
             onLeave={sectionLeave}
+            theme={themes.dark}
           >
             {{
-              icon: <SectionIcon animationData={creativeData}/>,
-              heading: <Heading>Creative</Heading>,
-              subheading: <Subheading>Lorem ipsum dolor sit, amet consectetur.</Subheading>,
+              icon: <SectionIcon theme={themes.light} animationData={creativeData}/>,
+              heading: <Heading theme={themes.dark}>Creative</Heading>,
+              subheading: <Subheading theme={themes.dark}>Lorem ipsum dolor sit, amet consectetur.</Subheading>,
               content: (
                 <p>
                   Lorem, ipsum dolor sit amet consectetur! Lorem, ipsum dolor
                   sit amet consectetur. Lorem, ipsum dolor sit amet...
                 </p>
               ),
-              action: <NavButton to={sections[3].path} exact>Interactive</NavButton>
+              action: <NavButton color="chartreuse" to={sections[3].path} exact>Interactive</NavButton>
             }}
           </SwipeableSection>
         )}
@@ -318,18 +269,19 @@ export class ServicesPage extends React.Component<Props, State> {
             onAppear={sectionAppear}
             onEnter={sectionEnter}
             onLeave={sectionLeave}
+            theme={themes.dark}
           >
             {{
-              icon: <SectionIcon animationData={interactiveData}/>,
-              heading: <Heading>Interactive</Heading>,
-              subheading: <Subheading>Lorem ipsum dolor sit, amet consectetur.</Subheading>,
+              icon: <SectionIcon theme={themes.light} animationData={interactiveData}/>,
+              heading: <Heading theme={themes.dark}>Interactive</Heading>,
+              subheading: <Subheading theme={themes.dark}>Lorem ipsum dolor sit, amet consectetur.</Subheading>,
               content: (
                 <p>
                   Lorem, ipsum dolor sit amet consectetur! Lorem, ipsum dolor
                   sit amet consectetur. Lorem, ipsum dolor sit amet...
                 </p>
               ),
-              action: <NavButton to={sections[4].path} exact>Data/Insights</NavButton>
+              action: <NavButton color="chartreuse" to={sections[4].path} exact>Data/Insights</NavButton>
             }}
           </SwipeableSection>
         )}
@@ -342,18 +294,19 @@ export class ServicesPage extends React.Component<Props, State> {
             onAppear={sectionAppear}
             onEnter={sectionEnter}
             onLeave={sectionLeave}
+            theme={themes.dark}
           >
             {{
-              icon: <SectionIcon animationData={insightsData}/>,
-              heading: <Heading>Data/Insights</Heading>,
-              subheading: <Subheading>Lorem ipsum dolor sit, amet consectetur.</Subheading>,
+              icon: <SectionIcon theme={themes.light} animationData={insightsData}/>,
+              heading: <Heading theme={themes.dark}>Data/Insights</Heading>,
+              subheading: <Subheading theme={themes.dark}>Lorem ipsum dolor sit, amet consectetur.</Subheading>,
               content: (
                 <p>
                   Lorem, ipsum dolor sit amet consectetur! Lorem, ipsum dolor
                   sit amet consectetur. Lorem, ipsum dolor sit amet...
                 </p>
               ),
-              action: <NavButton to="/contact" exact>Contact Us</NavButton>
+              action: <NavButton color="chartreuse" to="/contact" exact>Contact Us</NavButton>
             }}
           </SwipeableSection>
         )}
@@ -362,6 +315,7 @@ export class ServicesPage extends React.Component<Props, State> {
           current={active}
           diameter={20}
           items={map(sections, 'path')}
+          theme={themes.light}
         />
       </TransitionGroupPlus>
     );

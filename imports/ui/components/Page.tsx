@@ -1,34 +1,37 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
+import { Theme } from '../theme';
 
 export type Ref = HTMLElement;
 
 type Props = {
-  readonly innerRef?: React.Ref<Ref>,
+  readonly children?: React.ReactNode,
   readonly className?: string,
-  children?: React.ReactNode,
+  readonly innerRef?: React.Ref<Ref>,
+  readonly theme?: Theme,
 } & React.HTMLAttributes<HTMLElement>;
 
 const style = (props: Partial<Props>) => css`
-  label: page;
-
-  width: 100%;
   height: auto;
   min-height: 100%;
+  width: 100%;
+
+  color: ${props.theme.color.body};
 
   display: flex;
+  align-items: center;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
 
-  position: relative;
   z-index: 1;
+  position: relative;
+
   ${props.className}
 `;
 
-export const Page = React.forwardRef<Ref, Props>((props, ref) => {
-  const { innerRef, className, children, ...rest } = props;
+const Element = React.forwardRef<Ref, Props>((props, ref) => {
+  const { className, children, innerRef, theme, ...rest } = props;
 
   return (
     <article ref={innerRef || ref} className={style(props)} {...rest}>
@@ -36,4 +39,6 @@ export const Page = React.forwardRef<Ref, Props>((props, ref) => {
     </article>
   );
 });
-Page.displayName = 'Page';
+Element.displayName = 'Page';
+
+export const Page = withTheme<Props, Theme>(Element);

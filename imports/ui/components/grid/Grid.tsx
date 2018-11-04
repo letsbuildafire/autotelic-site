@@ -24,7 +24,6 @@ export type Props = {
   readonly justifyContent?: {[key in Breakpoints]?: string} | string,
   readonly rows?: {[key in Breakpoints]?: string } | string,
   readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
 };
 
 const atBreakpoint = (breakpoint: Breakpoints, props: Partial<Props>) => css`
@@ -144,7 +143,6 @@ const Element = React.forwardRef<Ref, Props>((props, ref) => {
     justifyContent,
     rows,
     theme,
-    variant,
     ...pass
   } = props;
 

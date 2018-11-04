@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../../theme';
+import { Theme } from '../../theme';
 import { isEmpty } from 'lodash';
 
 // components
@@ -12,7 +12,6 @@ import { Label } from './Label';
 type Props = {
   readonly label?: string,
   readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 type PropsWithContext = Props & FieldProps<any>;
@@ -104,7 +103,7 @@ class Element extends React.PureComponent<PropsWithContext> {
   };
 
   render() {
-    const { id, form, field, label, type, ...rest} = this.props;
+    const { form, field, id, label, type, ...rest} = this.props;
     const touched = !!form.touched[field.name];
     const invalid = !!form.errors[field.name];
 

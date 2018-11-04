@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../../theme';
-
-// helpers
-import { mq, Breakpoints } from '../../theme/media';
+import { mq, Theme } from '../../theme';
+import { Breakpoints } from '../../theme/media';
 
 export type Ref = HTMLDivElement;
 
@@ -25,7 +23,6 @@ export type Props = {
   readonly order?: {[key in Breakpoints]?: number } | number,
   readonly size?: {[key in Breakpoints]?: number} | number,
   readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
   readonly wrap?: {[key in Breakpoints]?: wrap } | wrap,
 };
 
@@ -144,7 +141,7 @@ const style = (props: Partial<Props>) => css`
 `;
 
 const Element = React.forwardRef<Ref, Props>((props, ref) => {
-  const { innerRef, children } = props;
+  const { children, innerRef } = props;
   return (
     <div ref={innerRef || ref} className={style(props)}>{children}</div>
   );

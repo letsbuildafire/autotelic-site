@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../../theme';
+import { Theme } from '../../theme';
 
 // components
 import { Field, FieldAttributes } from 'formik';
@@ -9,11 +9,8 @@ import { FieldFeedback } from './FieldFeedback';
 import { Label } from './Label';
 
 type Props = {
-  readonly columns?: number,
-  readonly rows?: number,
   readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
-} & React.InputHTMLAttributes<HTMLInputElement>;
+} & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
 type PropsWithContext = Props & FieldAttributes<any>;
 
@@ -101,13 +98,12 @@ class Element extends React.PureComponent<PropsWithContext> {
 
   render() {
     const {
-      id,
       field,
       form,
+      id,
       label,
       placeholder,
       theme,
-      variant,
       ...rest
     } = this.props;
 

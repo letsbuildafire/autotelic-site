@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { History, Location } from 'history';
-import { css } from 'emotion';
+import { css, keyframes } from 'emotion';
+import { themes } from '../theme';
 import { debounce, findIndex, map } from 'lodash';
 import { matchPath } from 'react-router';
 
 // helpers
 import { TweenLite, TimelineLite } from 'gsap';
 import * as TransitionGroupPlus from 'react-transition-group-plus';
-import { Transitionable } from '../helpers/Transitionable';
 
 // components
 import { Page, Ref as PageRef } from '../components/Page';
@@ -17,7 +17,6 @@ import { Heading } from '../components/Heading';
 import { Subheading } from '../components/Subheading';
 import { NavButton } from '../components/buttons';
 import { Dots } from '../components/pagination';
-import { Eyecatch, Ref as EyecatchRef } from '../components/Eyecatch';
 
 // icon data
 import {
@@ -31,28 +30,42 @@ type Props = {
   sections?: Array<{path: string, title?: string}>,
 };
 
+const scroll = keyframes`
+  from, to {
+    background-position-y: 0;
+  }
+
+  50% {
+    background-position-y: 100%;
+  }
+`;
+
 const style = (props: Partial<Props>) => css`
   justify-content: flex-start;
+
+  background: radial-gradient(circle at 100% 0, crimson, dodgerblue);
+  background-size: 300% 300%;
+  background-position-x: 0%;
+  background-position-y: 50%;
+  will-change: background-position;
+
+  animation: ${scroll} 60s ease infinite;
 `;
 
 const sectionStyle = (props: Partial<Props>) => css`
-  min-height: 100%;
-
-  flex: 1 0 100%;
+  min-height: 100vh;
 `;
 
 const dotsStyle = (props: Partial<Props>, state: State) => css`
   position: absolute;
-  margin: auto;
   right: 0;
   bottom: 20px;
   left: 0;
+  margin: auto;
 
   flex: 0 0 auto;
 
-  ${state.active > 0 && `
-    color: #ADEBD6;
-  `}
+  opacity: 0.3;
 `;
 
 type State = {
@@ -69,7 +82,6 @@ export class AboutPage extends React.Component<Props, State> {
     ],
   };
   private ref = React.createRef<PageRef>();
-  private eyecatch = React.createRef<EyecatchRef>();
 
   constructor(props: Props) {
     super(props);
@@ -84,18 +96,18 @@ export class AboutPage extends React.Component<Props, State> {
     };
   }
 
-  componentDidMount() {
-    TweenLite.set(this.ref.current, {
-      opacity: 0,
-    });
-  }
-
   componentDidUpdate(prevProps: Props, prevState: State) {
-    const { location } = this.props;
+    const { location, sections } = this.props;
     const { location: from } = prevProps;
     const { active: previous } = prevState;
 
     const active = this.getSectionIndex(location.pathname);
+
+    if (this.ref.current) {
+      TweenLite.to(this.ref.current, 1, {
+        backgroundPositionX: `${(active + 1) / sections.length * 100}%`,
+      });
+    }
 
     if (location.pathname !== from.pathname) {
       this.setState({
@@ -106,38 +118,36 @@ export class AboutPage extends React.Component<Props, State> {
   }
 
   componentWillAppear(cb: () => void) {
-    TweenLite.fromTo(this.ref.current, 0.3, {
-      opacity: 0,
-      y: '20px',
+    TweenLite.fromTo(this.ref.current.children, 0.3, {
+      y: -20,
     }, {
-      opacity: 1,
       y: 0,
-      clearProps: 'transform, opacity',
+      clearProps: 'translate',
       onComplete: cb,
     });
   }
 
   componentWillEnter(cb: () => void) {
-    TweenLite.fromTo(this.ref.current, 0.3, {
+    TweenLite.fromTo(this.ref.current.children, 0.3, {
       opacity: 0,
-      y: '20px',
+      y: -20,
     }, {
       opacity: 1,
       y: 0,
-      clearProps: 'transform, opacity',
-      onComplete: cb
+      clearProps: 'translate, opacity',
+      onComplete: cb,
     });
   }
 
   componentWillLeave(cb: () => void) {
     TweenLite.set(this.ref.current, {
       position: 'absolute',
+      zIndex: 2,
     });
 
-    TweenLite.to(this.ref.current, 0.3, {
+    TweenLite.to(this.ref.current.children, 0.3, {
       opacity: 0,
-      y: '-20px',
-      clearProps: 'transform, opacity',
+      y: 20,
       onComplete: cb,
     });
   }
@@ -183,79 +193,26 @@ export class AboutPage extends React.Component<Props, State> {
         })}
       >
         {matchPath(location.pathname, {path: '/about/', strict: false, exact: true}) && (
-          <Transitionable
-            onMount={() => {
-              TweenLite.set(this.eyecatch.current, {
-                scale: 1.2,
-                opacity: 0,
-              });
-            }}
-            onAppear={() => {
-              TweenLite.to(this.eyecatch.current, 0.3, {
-                scale: 1,
-                opacity: 1,
-                clearProps: 'transform, opacity',
-              });
-            }}
-            onEnter={cb => {
-              TweenLite.fromTo(this.eyecatch.current, 0.3, {
-                scale: 1.2,
-                opacity: 0,
-              }, {
-                scale: 1,
-                opacity: 1,
-                clearProps: 'transform, opacity',
-                onComplete: cb,
-              });
-            }}
-            onLeave={cb => {
-              TweenLite.to(this.eyecatch.current, 0.3, {
-                scale: 1.2,
-                opacity: 0,
-                delay: 0.45,
-                clearProps: 'transform, opacity',
-                onComplete: cb,
-              });
-            }}
-            render={state => (
-              <Eyecatch
-                innerRef={this.eyecatch}
-                className={css`
-                  z-index: -1;
-                  position: absolute;
-                  top: 50%;
-                  left: 50%;
-
-                  height: auto;
-                  width: 350vw;
-
-                  transform: translate3d(-45%, -60%, 0);
-                  transform-origin: 50%, 100%;
-                  `}
-                />
-          )} />
-        )}
-        {matchPath(location.pathname, {path: '/about/', strict: false, exact: true}) && (
           <SwipeableSection
             index={0}
-            variant="light"
             className={sectionStyle(this.props)}
             onSwipingLeft={this.changeSection('/about/who-we-are')}
             onMount={sectionMount}
             onAppear={sectionAppear}
             onEnter={sectionEnter}
             onLeave={sectionLeave}
+            theme={themes.light}
           >
             {{
-              heading: <Heading variant="light">About Us</Heading>,
-              subheading: <Subheading variant="light">Lorem ipsum dolor sit, amet consectetur adipisicing elit.</Subheading>,
+              heading: <Heading theme={themes.light}>About Us</Heading>,
+              subheading: <Subheading theme={themes.light}>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</Subheading>,
               content: (
                 <p>
                   We’re an independent digital experience agency.
                   A secret weapon for brands. A sage counsel to partners.
                 </p>
               ),
-              action: <NavButton to="/about/who-we-are" exact>Who we are</NavButton>
+              action: <NavButton color="crimson" to="/about/who-we-are" exact>Who we are</NavButton>
             }}
           </SwipeableSection>
         )}
@@ -269,11 +226,12 @@ export class AboutPage extends React.Component<Props, State> {
             onAppear={sectionAppear}
             onEnter={sectionEnter}
             onLeave={sectionLeave}
+            theme={themes.light}
           >
             {{
-              icon: <SectionIcon animationData={aboutData}/>,
-              heading: <Heading>Who We Are</Heading>,
-              subheading: <Subheading>Lorem ipsum dolor sit, amet consectetur.</Subheading>,
+              icon: <SectionIcon theme={themes.dark} animationData={aboutData}/>,
+              heading: <Heading theme={themes.light}>Who We Are</Heading>,
+              subheading: <Subheading theme={themes.light}>Lorem ipsum dolor sit, amet consectetur.</Subheading>,
               content: (
                 <p>
                   A team of strategists disguised as designers, developers
@@ -282,7 +240,7 @@ export class AboutPage extends React.Component<Props, State> {
                   intelligent execution and a relentless attention to detail.
                 </p>
               ),
-              action: <NavButton to="/about/partnerships" exact>Partnerships</NavButton>
+              action: <NavButton color="crimson" to="/about/partnerships" exact>Partnerships</NavButton>
             }}
           </SwipeableSection>
         )}
@@ -295,11 +253,12 @@ export class AboutPage extends React.Component<Props, State> {
             onAppear={sectionAppear}
             onEnter={sectionEnter}
             onLeave={sectionLeave}
+            theme={themes.light}
           >
             {{
-              icon: <SectionIcon animationData={partnershipData}/>,
-              heading: <Heading>Partnerships / Relationships</Heading>,
-              subheading: <Subheading>Our partnerships produce results.</Subheading>,
+              icon: <SectionIcon theme={themes.dark} animationData={partnershipData}/>,
+              heading: <Heading theme={themes.light}>Partnerships / Relationships</Heading>,
+              subheading: <Subheading theme={themes.light}>Our partnerships produce results.</Subheading>,
               content: (
                 <p>
                   Our business is built on relationships. Whether they’re a
@@ -307,7 +266,7 @@ export class AboutPage extends React.Component<Props, State> {
                   tasks or the kind that cross many paths and endure for years.
                 </p>
               ),
-              action: <NavButton to="/services" exact>Services</NavButton>
+              action: <NavButton color="crimson" to="/services" exact>Services</NavButton>
             }}
           </SwipeableSection>
         )}
@@ -316,6 +275,7 @@ export class AboutPage extends React.Component<Props, State> {
           current={active}
           diameter={20}
           items={map(sections, 'path')}
+          theme={themes.dark}
         />
       </TransitionGroupPlus>
     );

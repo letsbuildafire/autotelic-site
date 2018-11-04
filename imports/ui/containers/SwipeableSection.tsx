@@ -94,7 +94,6 @@ export class SwipeableSection extends React.PureComponent<Props> {
     const { components, props } = this;
     const {
       index,
-      variant,
       disabled,
       onSwipingLeft,
       onSwipingRight,
@@ -111,7 +110,6 @@ export class SwipeableSection extends React.PureComponent<Props> {
             index={index}
             innerRef={components.self}
             className={style(props)}
-            variant={variant}
             {...swipeProps}
             children={{
               icon: children.icon && React.cloneElement(children.icon, {innerRef: components.icon}),

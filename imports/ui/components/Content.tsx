@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../theme';
+import { Theme } from '../theme';
 
 // helpers
 import * as TransitionGroupPlus from 'react-transition-group-plus';
@@ -9,10 +9,10 @@ import * as TransitionGroupPlus from 'react-transition-group-plus';
 type Props = {
   readonly children?: React.ReactNode,
   readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
 };
 
 const style = (props: Partial<Props>) => css`
+  z-index: 1;
   position: relative;
   height: 100%;
   width: 100%;
@@ -24,12 +24,12 @@ const style = (props: Partial<Props>) => css`
 `;
 
 const Element: React.SFC<Props> = (props: Props, context) => {
-  const { children, theme, variant, ...rest } = props;
+  const { children, theme, ...rest } = props;
   return (
     <TransitionGroupPlus
+      transitionMode="out-in"
       className={style(props)}
       component="main"
-      transitionMode="out-in"
       {...rest}
     >
       {children}
@@ -37,8 +37,5 @@ const Element: React.SFC<Props> = (props: Props, context) => {
   );
 };
 Element.displayName = 'Content';
-Element.defaultProps = {
-  variant: 'dark'
-};
 
 export const Content = withTheme<Props>(Element);
