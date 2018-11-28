@@ -6,12 +6,12 @@ import { Breakpoints, mq } from '../../theme/media';
 import * as Lottie from 'lottie-web';
 
 export type Ref = HTMLDivElement;
+
 export type Props = {
   readonly animationData: any,
   readonly autoplay?: boolean,
   readonly className?: string,
   readonly height?: {[key in Breakpoints]?: number | string} | string | number,
-  readonly innerRef?: React.Ref<Ref>,
   readonly loop?: boolean,
   readonly renderer?: 'svg' | 'canvas',
   readonly rendererSettings?: {
@@ -24,10 +24,11 @@ export type Props = {
 
 type State = Readonly<typeof initialState>;
 const initialState = {
+  complete: false,
+  direction: 1,
+  paused: false,
   speed: 0.25,
   stopped: true,
-  paused: false,
-  complete: false,
 };
 
 const baseValue = (breakpoint: Breakpoints, prop: any, value: any = false): any => {
@@ -95,7 +96,7 @@ const style = (props: Partial<Props>) => css`
   ${props.className}
 `;
 
-export class Icon extends React.Component<Props, State> {
+export class AnimatedIcon extends React.Component<Props, State> {
   public static defaultProps: Partial<Props> = {
     autoplay: true,
     height: 'auto',
@@ -107,15 +108,15 @@ export class Icon extends React.Component<Props, State> {
     },
     width: 'auto',
   };
-  private ref: React.RefObject<Ref>;
+  private canvas: React.RefObject<Ref>;
   private animation: any;
 
   constructor(props) {
     super(props);
 
-    const { innerRef, autoplay, speed } = props;
+    const { autoplay, speed } = props;
+    this.canvas = React.createRef<Ref>();
 
-    this.ref = innerRef || React.createRef<Ref>();
     this.state = {
       ...initialState,
       stopped: !autoplay,
@@ -128,7 +129,7 @@ export class Icon extends React.Component<Props, State> {
     const { width, height, ...params } = this.props;
 
     this.animation = Lottie.loadAnimation({
-      container: this.ref.current,
+      container: this.canvas.current,
       ...params
     });
 
@@ -160,15 +161,47 @@ export class Icon extends React.Component<Props, State> {
     this.animation = null;
   }
 
-  startAnimation = () => {
+  public startAnimation() {
+    const { autoplay } = this.props;
     const { speed } = this.state;
 
     this.animation.setSpeed(speed);
+
+    if (autoplay) {
+      this.animation.play();
+    }
+  }
+
+  public endAnimation() {
+    this.animation.pause();
+  }
+
+  public play() {
     this.animation.play();
   }
 
-  endAnimation = () => {
-    // callback prop?
+  public pause() {
+    this.animation.pause();
+  }
+
+  public stop() {
+    this.animation.stop();
+  }
+
+  public setSpeed(speed: number) {
+    this.setState({
+      speed,
+    });
+
+    this.animation.setSpeed(speed);
+  }
+
+  public setDirection(direction: 1 | -1) {
+    this.setState({
+      direction,
+    });
+
+    this.animation.setDirection(direction);
   }
 
   registerEvents(listeners) {
@@ -189,7 +222,7 @@ export class Icon extends React.Component<Props, State> {
 
   render() {
     return (
-      <div ref={this.ref} className={style(this.props)} tabIndex={0}/>
+      <div ref={this.canvas} className={style(this.props)} tabIndex={0}/>
     );
   }
 }

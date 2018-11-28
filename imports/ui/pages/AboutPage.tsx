@@ -11,6 +11,7 @@ import * as TransitionGroupPlus from 'react-transition-group-plus';
 
 // components
 import { Page, Ref as PageRef } from '../components/Page';
+import { Item, Grid } from '../components/grid';
 import { SwipeableSection } from '../containers/SwipeableSection';
 import { SectionIcon } from '../components/icons';
 import { Heading } from '../components/Heading';
@@ -23,6 +24,30 @@ import {
   aboutData,
   partnershipData,
 } from '../../ui/data/icons';
+import { CaliperIcon } from '../components/icons/static/CaliperIcon';
+import { MountainIcon } from '../components/icons/static/MountainIcon';
+import { BasketballIcon } from '../components/icons/static/BasketballIcon';
+import { LayersIcon } from '../components/icons/static/LayersIcon';
+import { MugIcon } from '../components/icons/static/MugIcon';
+import { CanadaIcon } from '../components/icons/static/CanadaIcon';
+import { ControllerIcon } from '../components/icons/static/ControllerIcon';
+import { HamburgerIcon } from '../components/icons/static/HamburgerIcon';
+import { DumbbellIcon } from '../components/icons/static/DumbbellIcon';
+import { BrushIcon } from '../components/icons/static/BrushIcon';
+import { PlaneIcon } from '../components/icons/static/PlaneIcon';
+import { BoxIcon } from '../components/icons/static/BoxIcon';
+import { CameraIcon } from '../components/icons/static/CameraIcon';
+import { CodeIcon } from '../components/icons/static/CodeIcon';
+import { CloudIcon } from '../components/icons/static/CloudIcon';
+import { FeatherIcon } from '../components/icons/static/FeatherIcon';
+import { GearIcon } from '../components/icons/static/GearIcon';
+import { FlaskIcon } from '../components/icons/static/FlaskIcon';
+import { ImageIcon } from '../components/icons/static/ImageIcon';
+import { LaptopIcon } from '../components/icons/static/LaptopIcon';
+import { PrintIcon } from '../components/icons/static/PrintIcon';
+import { SEOIcon } from '../components/icons/static/SEOIcon';
+import { MusicIcon } from '../components/icons/static/MusicIcon';
+import { VideoIcon } from '../components/icons/static/VideoIcon';
 
 type Props = {
   readonly history?: History,
@@ -207,10 +232,202 @@ export class AboutPage extends React.Component<Props, State> {
               heading: <Heading theme={themes.light}>About Us</Heading>,
               subheading: <Subheading theme={themes.light}>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</Subheading>,
               content: (
+              <>
                 <p>
-                  We’re an independent digital experience agency.
-                  A secret weapon for brands. A sage counsel to partners.
-                </p>
+                    We’re an independent digital experience agency.
+                    A secret weapon for brands. A sage counsel to partners.
+                  </p>
+                  <Grid
+                    rows="repeat(5, 1fr)"
+                    columns="repeat(5, 1fr)"
+                    className={css`
+                      position: absolute;
+                      left: 0;
+                      top: 0;
+                      right: 0;
+                      bottom: 0;
+                      margin: auto;
+                      z-index: -1;
+                    `}
+                    gaps="21px"
+                  >
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="1"
+                        column="1"
+                        element={MountainIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="1"
+                        column="2"
+                        element={CaliperIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="1"
+                        column="3"
+                        element={BasketballIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="1"
+                        column="4"
+                        element={LayersIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="1"
+                        column="5"
+                        element={MugIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="2"
+                        column="1"
+                        element={CanadaIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="2"
+                        column="2"
+                        element={ControllerIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="2"
+                        column="3"
+                        element={HamburgerIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="2"
+                        column="4"
+                        element={DumbbellIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="2"
+                        column="5"
+                        element={CameraIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="3"
+                        column="1"
+                        element={BrushIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="3"
+                        column="2"
+                        element={PlaneIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="3"
+                        column="3"
+                        element={BoxIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="3"
+                        column="4"
+                        element={CodeIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="3"
+                        column="5"
+                        element={CloudIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="4"
+                        column="1"
+                        element={FeatherIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="4"
+                        column="2"
+                        element={GearIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="4"
+                        column="3"
+                        element={FlaskIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="4"
+                        column="4"
+                        element={ImageIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="4"
+                        column="5"
+                        element={LaptopIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="5"
+                        column="1"
+                        element={PrintIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="5"
+                        column="2"
+                        element={SEOIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="5"
+                        column="2"
+                        element={SEOIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="5"
+                        column="3"
+                        element={MusicIcon}
+                      />
+                      <Item
+                        align="stretch"
+                        justify="stretch"
+                        row="5"
+                        column="4"
+                        element={VideoIcon}
+                      />
+                  </Grid>
+              </>
               ),
               action: <NavButton color="crimson" to="/about/who-we-are" exact>Who we are</NavButton>
             }}
@@ -229,7 +446,7 @@ export class AboutPage extends React.Component<Props, State> {
             theme={themes.light}
           >
             {{
-              icon: <SectionIcon theme={themes.dark} animationData={aboutData}/>,
+              icon: <SectionIcon autoplay={false} theme={themes.dark} animationData={aboutData}/>,
               heading: <Heading theme={themes.light}>Who We Are</Heading>,
               subheading: <Subheading theme={themes.light}>Lorem ipsum dolor sit, amet consectetur.</Subheading>,
               content: (
@@ -256,7 +473,7 @@ export class AboutPage extends React.Component<Props, State> {
             theme={themes.light}
           >
             {{
-              icon: <SectionIcon theme={themes.dark} animationData={partnershipData}/>,
+              icon: <SectionIcon autoplay={false} theme={themes.dark} animationData={partnershipData}/>,
               heading: <Heading theme={themes.light}>Partnerships / Relationships</Heading>,
               subheading: <Subheading theme={themes.light}>Our partnerships produce results.</Subheading>,
               content: (
@@ -289,10 +506,22 @@ const sectionMount = (els) => {
 };
 
 const sectionAppear = (els, cb) => {
-  TweenLite.set(els.self.current, {
+  const tl = new TimelineLite();
+
+  tl.set(els.self.current, {
     opacity: 1,
   });
-  cb();
+
+  if (els.icon.current) {
+    tl.call(() => {
+      if (els.icon.current) {
+        els.icon.current.play();
+      }
+    });
+  }
+
+  tl.call(cb);
+  tl.play();
 };
 
 const sectionEnter = (els, direction, cb) => {
@@ -301,6 +530,14 @@ const sectionEnter = (els, direction, cb) => {
   tl.set(els.self.current, {
     opacity: 1,
   });
+
+  if (els.icon.current) {
+    tl.call(() => {
+      if (els.icon.current) {
+        els.icon.current.play();
+      }
+    });
+  }
 
   if (els.heading.current) {
     tl.fromTo(els.heading.current, 0.3, {
@@ -338,10 +575,12 @@ const sectionLeave = (els, direction, cb) => {
   });
 
   if (els.icon.current) {
-    tl.fromTo(els.icon.current, 0.2, {
-      opacity: 1,
-    }, {
-      opacity: 0,
+    tl.call(() => {
+      if (els.icon.current) {
+        els.icon.current.setDirection(-1);
+        els.icon.current.setSpeed(2);
+        els.icon.current.play();
+      }
     });
   }
 
@@ -352,7 +591,7 @@ const sectionLeave = (els, direction, cb) => {
     }, {
       opacity: 0,
       x: `${direction ? '-' : ''}120px`,
-    });
+    }, '+0.75');
   }
 
   tl.fromTo(els.subheading.current, 0.3, {

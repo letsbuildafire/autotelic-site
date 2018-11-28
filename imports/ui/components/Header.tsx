@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { withTheme } from 'emotion-theming';
 import { css } from 'emotion';
-import { mq, Theme } from '../theme';
+import { mq, themes, Theme } from '../theme';
 
 // helpers
 import { FLUID_CONTAINER } from '../theme/grid';
@@ -18,7 +18,7 @@ type Props = {
 const style = (props: Partial<Props>) => css`
   ${FLUID_CONTAINER}
 
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.85);
   color: ${props.theme.color.body};
 
   height: 48px;
@@ -63,8 +63,8 @@ class Element extends React.PureComponent<Props> {
           `
         }}
         gaps={{
-          xs: `${theme.grid.gutterWidth}px 0`,
-          sm: `${theme.grid.gutterWidth}px`,
+          xs: `${themes.global.grid.gutterWidth}px 0`,
+          sm: `${themes.global.grid.gutterWidth}px`,
         }}
         align="center"
         justify="space-between"

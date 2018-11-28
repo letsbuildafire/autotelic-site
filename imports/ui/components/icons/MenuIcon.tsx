@@ -4,19 +4,19 @@ import { css } from 'emotion';
 import { Theme } from '../../theme';
 
 // components
-import { Icon, Props as IconProps, Ref } from './Icon';
+import { AnimatedIcon, Props as IconProps } from './AnimatedIcon';
 
 export type Props = {
-  innerRef?: React.Ref<Ref>,
+  innerRef?: React.Ref<AnimatedIcon>,
   readonly theme?: Theme,
   readonly className?: string,
 } & IconProps;
 
-const Element = React.forwardRef<Ref, Props>((props, ref) => {
+const Element = React.forwardRef<AnimatedIcon, Props>((props, ref) => {
   const { innerRef, theme, className, ...rest } = props;
 
   return (
-    <Icon innerRef={innerRef || ref} {...rest}/>
+    <AnimatedIcon ref={innerRef} {...rest}/>
   );
 });
 

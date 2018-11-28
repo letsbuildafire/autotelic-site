@@ -1,8 +1,8 @@
 import {
-  Icon,
-  Props as IconProps,
-  Ref as IconRef,
-} from './Icon';
+  AnimatedIcon,
+  Props as AnimatedIconProps,
+  Ref as AnimatedIconRef,
+} from './AnimatedIcon';
 
 import {
   SectionIcon,
@@ -14,9 +14,9 @@ import {
 } from './MenuIcon';
 
 export {
-  Icon,
-  IconProps,
-  IconRef,
+  AnimatedIcon,
+  AnimatedIconProps,
+  AnimatedIconRef,
   SectionIcon,
   SectionIconProps,
   MenuIcon,

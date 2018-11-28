@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { debounce } from 'lodash';
 import { ThemeProvider } from 'emotion-theming';
-import { themes, ThemeVariant } from '../theme';
+import { themes, Theme, ThemeVariant } from '../theme';
 import { Breakpoints, getBreakpoint } from '../theme/media';
 import { Location } from 'history';
 
@@ -65,11 +65,11 @@ export class AppContainer extends React.Component<Props, State> {
       window.removeEventListener('resize', this.setViewport);
   }
 
-  getTheme(location: Location) {
+  getTheme(location: Location): Theme {
     if (matchPath(location.pathname, {path: '/services', strict: false, exact: false})) {
-      return themes.dark;
+      return Object.assign(themes.global, themes.dark);
     }
-    return themes.light;
+    return Object.assign(themes.global, themes.light);
   }
 
   setViewport() {

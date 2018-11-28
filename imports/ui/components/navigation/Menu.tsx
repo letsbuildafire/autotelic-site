@@ -12,6 +12,8 @@ import { Transitionable } from '../../helpers/Transitionable';
 import { Item } from '../grid';
 import { MenuItem } from './types';
 import { Nav, Ref as NavRef } from './Nav';
+import { MobileNav, Ref as MobileNavRef } from './MobileNav';
+import { NavToggle } from './NavToggle';
 import { TweenLite } from 'gsap';
 
 export type Props = {
@@ -37,49 +39,6 @@ const style = (props: Partial<Props>) => css`
   ${props.className}
 `;
 
-const toggleStyle = (props: Partial<Props>) => css`
-  display: block;
-  width: 32px;
-  height: 22px;
-
-  position: relative;
-  margin-top: ${props.theme.grid.gutterWidth / 2}px;
-  margin-bottom: ${props.theme.grid.gutterWidth / 2}px;
-
-  color: black;
-
-  &:hover {
-    color: black;
-  }
-
-  span {
-    background-color: currentColor;
-    border-radius: 4px;
-
-    height: 3px;
-    width: 100%;
-
-    position: absolute;
-    left: 0;
-  }
-
-  span:nth-of-type(1) {
-    top: 0;
-  }
-
-  span:nth-of-type(2) {
-    top: 10px;
-  }
-
-  span:nth-of-type(3) {
-    bottom: 0;
-  }
-
-  ${mq.sm(css`
-    display: none;
-  `)}
-`;
-
 class Element extends React.PureComponent<Props, State> {
   public static displayName = 'Menu';
   public static defaultProps: Partial<Props> = {
@@ -100,13 +59,15 @@ class Element extends React.PureComponent<Props, State> {
   }
 
   toggleMenu() {
+    console.log('toggle');
     this.setState({
       isOpen: !this.state.isOpen
     });
   }
 
   componentDidUpdate(prevProps: Props, prevState: State) {
-    if (this.props.location.key !== prevProps.location.key) {
+    if (this.props.location.pathname !== prevProps.location.pathname) {
+      console.log('update');
       this.setState({
         isOpen: false
       });
@@ -114,13 +75,15 @@ class Element extends React.PureComponent<Props, State> {
   }
 
   showNav(cb) {
-    TweenLite.from(this.nav.current, 0.3, {
-      opacity: 0,
+    TweenLite.killTweensOf(this.nav.current);
+    TweenLite.to(this.nav.current, 0.3, {
+      opacity: 1,
       onComplete: cb,
     });
   }
 
   hideNav(cb) {
+    TweenLite.killTweensOf(this.nav.current);
     TweenLite.to(this.nav.current, 0.3, {
       opacity: 0,
       onComplete: cb,
@@ -142,14 +105,11 @@ class Element extends React.PureComponent<Props, State> {
           sm: 'start',
         }}
       >
-        <a className={toggleStyle(this.props)} onClick={this.toggleMenu}>
-          <span></span>
-          <span></span>
-          <span></span>
-        </a>
-        {true &&
+        <NavToggle focused={isOpen} onClick={this.toggleMenu} />
+        <Nav>{children}</Nav>
+        {isOpen &&
           <Transitionable onEnter={this.showNav} onLeave={this.hideNav} render={(state, props) => (
-            <Nav innerRef={this.nav}>{children}</Nav>
+            <MobileNav onClick={this.toggleMenu} innerRef={this.nav}>{children}</MobileNav>
           )}/>
         }
       </TransitionGroupPlus>

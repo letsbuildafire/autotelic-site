@@ -4,11 +4,11 @@ import { css } from 'emotion';
 import { mq, Theme } from '../../theme';
 
 // components
-import { Icon, Props as IconProps, Ref } from './Icon';
+import { AnimatedIcon, Props as IconProps } from './AnimatedIcon';
 
 export type Props = {
   readonly className?: string,
-  readonly innerRef?: React.Ref<Ref>,
+  readonly innerRef?: React.Ref<AnimatedIcon>,
   readonly theme?: Theme,
 } & IconProps;
 
@@ -51,11 +51,11 @@ const style = (props: Partial<Props>) => css`
   ${props.className}
 `;
 
-const Element = React.forwardRef<Ref, Props>((props, ref) => {
+const Element = React.forwardRef<AnimatedIcon, Props>((props, ref) => {
   const { className, innerRef, theme, ...rest } = props;
 
   return (
-    <Icon innerRef={innerRef || ref} className={style(props)} {...rest}/>
+    <AnimatedIcon ref={innerRef} className={style(props)} {...rest}/>
   );
 });
 

@@ -3,6 +3,7 @@ import { History, Location } from 'history';
 import { css } from 'emotion';
 import { matchPath, Prompt } from 'react-router-dom';
 import * as Yup from 'yup';
+import { themes } from '../theme';
 
 // helpers
 import { TweenLite, TimelineLite } from 'gsap';
@@ -11,6 +12,7 @@ import * as TransitionGroupPlus from 'react-transition-group-plus';
 // components
 import { Page, Ref as PageRef } from '../components/Page';
 import { Section } from '../containers/Section';
+import { CenteredSection } from '../containers/CenteredSection';
 import { Grid, Item } from '../components/grid';
 import { SectionIcon } from '../components/icons';
 import { Heading } from '../components/Heading';
@@ -43,6 +45,8 @@ type Props = {
   readonly location?: Location,
 };
 
+type State = {};
+
 const style = (props: Partial<Props>) => css`
   justify-content: flex-start;
 
@@ -53,13 +57,7 @@ const style = (props: Partial<Props>) => css`
 `;
 
 const sectionStyle = (props: Partial<Props>) => css`
-  padding-top: 32px;
-  padding-bottom: 64px;
-  min-height: 100%;
-
-  justify-content: center;
-
-  flex: 1 0 100%;
+  min-height: 100vh;
 `;
 
 const socialStyle = (props: Partial<Props>) => css`
@@ -67,12 +65,7 @@ const socialStyle = (props: Partial<Props>) => css`
 `;
 
 const wizardStyle = (props: Partial<Props>) => css`
-  background: linear-gradient(21deg, #3CE87F, #5DA8B5);
-
   flex: 1 1 auto;
-
-  padding-top: 32px;
-  padding-bottom: 64px;
 `;
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -100,6 +93,17 @@ export class ContactPage extends React.Component<Props> {
       blockNavigation: false,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidUpdate(prevProps: Props, prevState: State) {
+    // const { location: from } = prevProps;
+    // const { active: previous } = prevState;
+
+    // if (this.ref.current) {
+    //   TweenLite.to(this.ref.current, 1, {
+    //     backgroundPositionX: `${(active + 1) / sections.length * 100}%`,
+    //   });
+    // }
   }
 
   componentWillAppear(cb: () => void) {
@@ -233,90 +237,10 @@ const stepLeave = (el: HTMLDivElement, direction: boolean, cb: () => void) => {
   });
 };
 
-const stepGrid = {
-  rows: {
-    xs: '64px auto',
-    sm: '1fr auto 1fr',
-    lg: '1fr auto 1fr',
-  },
-  columns: {
-    xs: '30px auto 30px',
-    sm: '30px 1.5fr 80px 2fr 30px',
-    lg: '1fr 300px 80px 400px 1fr',
-  },
-  areas: {
-    xs: `
-      ". secondary ."
-      ". primary ."
-    `,
-    sm: `
-      ". . . . ."
-      ". primary . secondary ."
-      ". . . . ."
-    `,
-    lg: `
-      ". . . . ."
-      ". primary . secondary ."
-      ". . . . ."
-    `,
-  },
-  align: {
-    xs: 'end',
-    sm: 'end',
-  },
-  alignContent: {
-    xs: 'end',
-    sm: 'center',
-  },
-  justify: {
-    xs: 'stretch',
-    sm: 'stretch',
-  },
-};
-
-const wideStepGrid = {
-  ...stepGrid,
-  columns: {
-    xs: '30px auto 30px',
-    sm: '30px 1.5fr 80px 2fr 30px',
-    lg: '1fr 80px auto 80px 1fr',
-  },
-  areas: {
-    xs: `
-      ". secondary ."
-      ". primary ."
-    `,
-    sm: `
-      ". . . . ."
-      ". primary . secondary ."
-      ". . . . ."
-    `,
-    lg: `
-      ". . . . ."
-      ". . primary secondary ."
-      ". . . . ."
-    `,
-  },
-};
-
 const stepStyle = css`
-  position: relative;
-  z-index: 1;
-
-  flex: 0 0 100%;
-  align-self: stretch;
-  justify-self: stretch;
+  min-height: 100%;
 
   user-select: none;
-`;
-
-const stepIconStyle = css`
-  top: 50%;
-
-  width: 100vw;
-  max-width: 300px;
-
-  transform: translate3d(-25%, 33.3%, 0);
 `;
 
 const DetailsStep = (
@@ -346,41 +270,43 @@ const DetailsStep = (
       }, [['phone', 'email'], ['email', 'phone']])
     }
     render={(ref, ctx) => (
-      <Grid innerRef={ref} className={stepStyle} {...stepGrid}>
-        <Item area="secondary">
-          <SectionIcon className={stepIconStyle} animationData={quoteAboutData}/>
-        </Item>
-        <Item area="primary">
-            <Heading>About You</Heading>
-            <Subheading>Nice to meet you.</Subheading>
-            <TextField
-              id="name"
-              name="name"
-              type="text"
-              label="Name"
-            />
-            <TextField
-              id="email"
-              name="email"
-              type="email"
-              label="Email"
-            />
-            <TextField
-              id="phone"
-              name="phone"
-              type="text"
-              label="Phone"
-            />
-            <ConditionalField show={c => c.values.email && c.values.phone}>
-              <ToggleField
-                id="method"
-                name="method"
-                labelOff="email me"
-                labelOn="call me"
+      <Section index={1} innerRef={ref} className={stepStyle}>
+        {{
+          icon: <SectionIcon animationData={quoteAboutData}/>,
+          heading: <Heading>About You</Heading>,
+          subheading: <Subheading>Nice to meet you.</Subheading>,
+          content: (
+            <>
+              <TextField
+                id="name"
+                name="name"
+                type="text"
+                label="Name"
               />
-            </ConditionalField>
-        </Item>
-      </Grid>
+              <TextField
+                id="email"
+                name="email"
+                type="email"
+                label="Email"
+              />
+              <TextField
+                id="phone"
+                name="phone"
+                type="text"
+                label="Phone"
+              />
+              <ConditionalField show={c => c.values.email && c.values.phone}>
+                <ToggleField
+                  id="method"
+                  name="method"
+                  labelOff="email me"
+                  labelOn="call me"
+                />
+              </ConditionalField>
+            </>
+          ),
+        }}
+      </Section>
     )}
   />
 );
@@ -393,34 +319,31 @@ const TimeframeStep = (
     onEnter={stepEnter}
     onLeave={stepLeave}
     render={(ref, ctx) => (
-      <Grid innerRef={ref} className={stepStyle} {...wideStepGrid}>
-        <Item area="secondary">
-          {ctx.values.timeframe > 7 && ctx.values.timeframe <= 10 &&
-            <SectionIcon className={stepIconStyle} animationData={quoteServicesData}/>
-          }
-          {ctx.values.timeframe > 10 &&
-            <SectionIcon className={stepIconStyle} animationData={quoteAboutData}/>
-          }
-        </Item>
-        <Item area="primary">
-          <Heading>Yo</Heading>
-          <Subheading>When do you want it dawg?</Subheading>
-          <RangeField
-            id="timeframe"
-            name="timeframe"
-            unit={ctx.values.timey ? 'months' : 'weeks'}
-            min={ctx.values.timey ? 2 : 4}
-            max={ctx.values.timey ? 12 : 12}
-            step={1}
-          />
-          <ToggleField
-            id="timey"
-            name="timey"
-            labelOff="weeks"
-            labelOn="months"
-          />
-        </Item>
-      </Grid>
+      <CenteredSection index={2} innerRef={ref} className={stepStyle}>
+        {{
+          icon: <SectionIcon animationData={quoteServicesData}/>,
+          heading: <Heading>Yo</Heading>,
+          subheading: <Subheading>When do you want it dawg?</Subheading>,
+          content: (
+            <>
+              <RangeField
+                id="timeframe"
+                name="timeframe"
+                unit={ctx.values.timey ? 'months' : 'weeks'}
+                min={ctx.values.timey ? 2 : 4}
+                max={ctx.values.timey ? 12 : 12}
+                step={1}
+              />
+              <ToggleField
+                id="timey"
+                name="timey"
+                labelOff="weeks"
+                labelOn="months"
+              />
+            </>
+          ),
+        }}
+      </CenteredSection>
     )}
   />
 );
@@ -433,24 +356,24 @@ const ServicesStep = (
     onEnter={stepEnter}
     onLeave={stepLeave}
     render={(ref, ctx) => (
-      <Grid innerRef={ref} className={stepStyle} {...stepGrid}>
-        <Item area="secondary">
-          <SectionIcon className={stepIconStyle} animationData={quoteServicesData}/>
-        </Item>
-        <Item area="primary">
-          <Heading>Services</Heading>
-          <Subheading>How can we help?</Subheading>
-          <CheckboxGroup
-            name="services"
-            options={[
-              { id: 'user-experience', label: 'User Experience'},
-              { id: 'creative', label: 'Creative'},
-              { id: 'interactive', label: 'Interactive'},
-              { id: 'data-insights', label: 'Data / Insights'},
-            ]}
-          />
-        </Item>
-      </Grid>
+      <Section index={3} innerRef={ref} className={stepStyle}>
+        {{
+          icon: <SectionIcon animationData={quoteServicesData}/>,
+          heading: <Heading>Services</Heading>,
+          subheading: <Subheading>How can we help?</Subheading>,
+          content: (
+            <CheckboxGroup
+              name="services"
+              options={[
+                { id: 'user-experience', label: 'User Experience'},
+                { id: 'creative', label: 'Creative'},
+                { id: 'interactive', label: 'Interactive'},
+                { id: 'data-insights', label: 'Data / Insights'},
+              ]}
+            />
+          ),
+        }}
+      </Section>
     )}
   />
 );
@@ -463,25 +386,25 @@ const BudgetStep = (
     onEnter={stepEnter}
     onLeave={stepLeave}
     render={(ref, ctx) => (
-      <Grid innerRef={ref} className={stepStyle} {...wideStepGrid}>
-        <Item area="secondary">
-          <SectionIcon className={stepIconStyle} animationData={quoteServicesData}/>
-        </Item>
-        <Item area="primary">
-          <Heading>Yo</Heading>
-          <Subheading>How much money dawg?</Subheading>
-          <RangeField
-            id="budget"
-            name="budget"
-            unit="dollars"
-            min={5000}
-            max={55000}
-            step={5000}
-            format={value => Math.ceil(value / 1000) * 1000}
-            display={value => `${Math.ceil(value / 1000)}k`}
-          />
-        </Item>
-      </Grid>
+      <CenteredSection index={4} innerRef={ref} className={stepStyle}>
+        {{
+          icon: <SectionIcon animationData={quoteServicesData}/>,
+          heading: <Heading>Yo</Heading>,
+          subheading: <Subheading>How much money dawg?</Subheading>,
+          content: (
+            <RangeField
+              id="budget"
+              name="budget"
+              unit="dollars"
+              min={5000}
+              max={55000}
+              step={5000}
+              format={value => Math.ceil(value / 1000) * 1000}
+              display={value => `${Math.ceil(value / 1000)}k`}
+            />
+          ),
+        }}
+      </CenteredSection>
     )}
   />
 );
@@ -494,28 +417,30 @@ const CommentsStep = (
     onEnter={stepEnter}
     onLeave={stepLeave}
     render={(ref, ctx) => (
-      <Grid innerRef={ref} className={stepStyle} {...stepGrid}>
-        <Item area="secondary">
-          <SectionIcon className={stepIconStyle} animationData={quoteServicesData}/>
-        </Item>
-        <Item area="primary">
-          <Heading>Comments</Heading>
-          <Subheading>Can you give any additional detail?</Subheading>
-          <TextAreaField
-            id="comments"
-            name="comments"
-            rows={5}
-            cols={40}
-            placeholder="Comments/questions..."
-          />
-          <FileField
-            id="files"
-            name="files"
-            button="Add Files"
-            label="or drag and drop here"
-          />
-        </Item>
-      </Grid>
+      <Section index={5} innerRef={ref} className={stepStyle}>
+        {{
+          icon: <SectionIcon animationData={quoteServicesData}/>,
+          heading: <Heading>Comments</Heading>,
+          subheading: <Subheading>Can you give any additional detail?</Subheading>,
+          content: (
+            <>
+              <TextAreaField
+                id="comments"
+                name="comments"
+                rows={5}
+                cols={40}
+                placeholder="Comments/questions..."
+              />
+              <FileField
+                id="files"
+                name="files"
+                button="Add Files"
+                label="or drag and drop here"
+              />
+            </>
+          ),
+        }}
+      </Section>
     )}
   />
 );
@@ -528,18 +453,22 @@ const ConfirmationStep = (
     onEnter={stepEnter}
     onLeave={stepLeave}
     render={(ref, ctx) => (
-      <Grid innerRef={ref} className={stepStyle} {...stepGrid}>
-        <Item area="primary">
-          <SectionIcon className={stepIconStyle} animationData={quoteServicesData}/>
-          <Subheading>Did we get that right?</Subheading>
-          <span>Name: {ctx.values.name}</span>
-          <span>Phone: {ctx.values.phone}</span>
-          <span>Email: {ctx.values.email}</span>
-          <span>Services: {ctx.values.services}</span>
-          <span>Budget: {ctx.values.budget}</span>
-          <span>Timeframe: {ctx.values.timeframe}</span>
-        </Item>
-      </Grid>
+      <Section index={6} innerRef={ref} className={stepStyle}>
+        {{
+          icon: <SectionIcon animationData={quoteServicesData}/>,
+          subheading: <Subheading>Did we get that right?</Subheading>,
+          content: (
+            <>
+              <p>Name: {ctx.values.name}</p>
+              <p>Phone: {ctx.values.phone}</p>
+              <p>Email: {ctx.values.email}</p>
+              <p>Services: {ctx.values.services}</p>
+              <p>Budget: {ctx.values.budget}</p>
+              <p>Timeframe: {ctx.values.timeframe}</p>
+            </>
+          ),
+        }}
+      </Section>
     )}
   />
 );

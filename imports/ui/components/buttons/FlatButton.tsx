@@ -8,9 +8,13 @@ import { Button, Props } from './Button';
 
 export const style = (props: Partial<Props>) => css`
   background: none;
-  color: ${props.theme.color.body};
+  color: inherit;
 
   min-width: 8rem;
+
+  &:hover {
+    background: none;
+  }
 
   ${props.className}
 `;

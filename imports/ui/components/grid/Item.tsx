@@ -12,11 +12,11 @@ type position = 'start' | 'center' | 'end' | 'stretch';
 
 export type Props = {
   readonly align?: {[key in Breakpoints]?: position} | position,
-  readonly children: React.ReactNode,
+  readonly children?: React.ReactNode,
   readonly className?: string,
   readonly area?: {[key in Breakpoints]?: string} | string,
   readonly column?: {[key in Breakpoints]?: string} | string,
-  readonly element?: string | React.ComponentType,
+  readonly element?: string | React.ComponentType<any>,
   readonly innerRef?: React.Ref<Ref>,
   readonly justify?: {[key in Breakpoints]?: position} | position,
   readonly order?: {[key in Breakpoints]?: number} | number,

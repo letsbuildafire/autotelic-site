@@ -220,7 +220,7 @@ export class ServicesPage extends React.Component<Props, State> {
             theme={themes.dark}
           >
             {{
-              icon: <SectionIcon theme={themes.light} animationData={experienceData}/>,
+              icon: <SectionIcon autoplay={false} theme={themes.light} animationData={experienceData}/>,
               heading: <Heading theme={themes.dark}>User Experience</Heading>,
               subheading: <Subheading theme={themes.dark}>Lorem ipsum dolor sit, amet consectetur.</Subheading>,
               content: (
@@ -246,7 +246,7 @@ export class ServicesPage extends React.Component<Props, State> {
             theme={themes.dark}
           >
             {{
-              icon: <SectionIcon theme={themes.light} animationData={creativeData}/>,
+              icon: <SectionIcon autoplay={false} theme={themes.light} animationData={creativeData}/>,
               heading: <Heading theme={themes.dark}>Creative</Heading>,
               subheading: <Subheading theme={themes.dark}>Lorem ipsum dolor sit, amet consectetur.</Subheading>,
               content: (
@@ -272,7 +272,7 @@ export class ServicesPage extends React.Component<Props, State> {
             theme={themes.dark}
           >
             {{
-              icon: <SectionIcon theme={themes.light} animationData={interactiveData}/>,
+              icon: <SectionIcon autoplay={false} theme={themes.light} animationData={interactiveData}/>,
               heading: <Heading theme={themes.dark}>Interactive</Heading>,
               subheading: <Subheading theme={themes.dark}>Lorem ipsum dolor sit, amet consectetur.</Subheading>,
               content: (
@@ -297,7 +297,7 @@ export class ServicesPage extends React.Component<Props, State> {
             theme={themes.dark}
           >
             {{
-              icon: <SectionIcon theme={themes.light} animationData={insightsData}/>,
+              icon: <SectionIcon autoplay={false} theme={themes.light} animationData={insightsData}/>,
               heading: <Heading theme={themes.dark}>Data/Insights</Heading>,
               subheading: <Subheading theme={themes.dark}>Lorem ipsum dolor sit, amet consectetur.</Subheading>,
               content: (
@@ -329,9 +329,22 @@ const sectionMount = (els) => {
 };
 
 const sectionAppear = (els, cb) => {
-  TweenLite.set(els.self.current, {
+  const tl = new TimelineLite();
+
+  tl.set(els.self.current, {
     opacity: 1,
   });
+
+  if (els.icon.current) {
+    tl.call(() => {
+      if (els.icon.current) {
+        els.icon.current.play();
+      }
+    });
+  }
+
+  tl.call(cb);
+  tl.play();
 };
 
 const sectionEnter = (els, direction, cb) => {
@@ -340,6 +353,14 @@ const sectionEnter = (els, direction, cb) => {
   tl.set(els.self.current, {
     opacity: 1,
   });
+
+  if (els.icon.current) {
+    tl.call(() => {
+      if (els.icon.current) {
+        els.icon.current.play();
+      }
+    });
+  }
 
   if (els.heading.current) {
     tl.fromTo(els.heading.current, 0.3, {
@@ -377,10 +398,12 @@ const sectionLeave = (els, direction, cb) => {
   });
 
   if (els.icon.current) {
-    tl.fromTo(els.icon.current, 0.2, {
-      opacity: 1,
-    }, {
-      opacity: 0,
+    tl.call(() => {
+      if (els.icon.current) {
+        els.icon.current.setDirection(-1);
+        els.icon.current.setSpeed(2);
+        els.icon.current.play();
+      }
     });
   }
 
@@ -391,7 +414,7 @@ const sectionLeave = (els, direction, cb) => {
     }, {
       opacity: 0,
       x: `${direction ? '-' : ''}120px`,
-    });
+    }, '+0.75');
   }
 
   tl.fromTo(els.subheading.current, 0.3, {

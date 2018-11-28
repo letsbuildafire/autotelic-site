@@ -43,12 +43,6 @@ const style = (props: Partial<Props>) => css`
 
 const primaryStyle = css`
   max-width: 480px;
-
-  text-align: center;
-
-  ${mq.sm(css`
-    text-align: left;
-  `)}
 `;
 
 const secondaryStyle = css`
@@ -61,8 +55,6 @@ const secondaryStyle = css`
 const contentStyle = css`
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
-
-  text-align: left;
 `;
 
 class Element extends React.PureComponent<Props> {
@@ -83,7 +75,7 @@ class Element extends React.PureComponent<Props> {
           }}
           columns={{
             xs: `auto`,
-            sm: `5% auto 1fr`,
+            sm: `1fr auto 1fr`,
           }}
           areas={{
             xs: `
@@ -138,4 +130,4 @@ class Element extends React.PureComponent<Props> {
   }
 }
 
-export const Section = withTheme<Props, Theme>(Element);
+export const CenteredSection = withTheme<Props, Theme>(Element);

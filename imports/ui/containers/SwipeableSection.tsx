@@ -9,7 +9,7 @@ import { Swipeable } from '../helpers/Swipeable';
 import { Section, Ref as SectionRef, Props as SectionProps } from './Section';
 import { Ref as HeadingRef } from '../components/Heading';
 import { Ref as SubheadingRef } from '../components/Subheading';
-import { IconRef } from '../components/icons';
+import { AnimatedIcon } from '../components/icons';
 
 type Props = {
   readonly disabled?: boolean,
@@ -44,7 +44,7 @@ export class SwipeableSection extends React.PureComponent<Props> {
 
     this.components = {
       self: props.innerRef || React.createRef<SectionRef>(),
-      icon: React.createRef<IconRef>(),
+      icon: React.createRef<AnimatedIcon>(),
       heading: React.createRef<HeadingRef>(),
       subheading: React.createRef<SubheadingRef>(),
       content: React.createRef<HTMLDivElement>(),
@@ -115,7 +115,9 @@ export class SwipeableSection extends React.PureComponent<Props> {
               icon: children.icon && React.cloneElement(children.icon, {innerRef: components.icon}),
               heading: children.heading && React.cloneElement(children.heading, {innerRef: components.heading}),
               subheading: React.cloneElement(children.subheading, {innerRef: components.subheading}),
-              content: <div ref={components.content}>{children.content}</div>,
+              content: <div ref={components.content}>
+                {children.content}
+              </div>,
               action: children.action,
           }}/>
       )}/>
