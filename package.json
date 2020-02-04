@@ -20,7 +20,7 @@
     "meteor-node-stubs": "^0.4.1",
     "polished": "^2.3.0",
     "react": "^16.4.1",
-    "react-dom": "^16.4.1",
+    "react-dom": "^16.4.2",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "react-transition-group-plus": "^0.5.3",
