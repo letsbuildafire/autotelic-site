@@ -1,7 +1,2 @@
-import {
-  Dots,
-} from './Dots';
-
-export {
-  Dots,
-};
+export { Dots } from './Dots';
+export { PageDots } from './PageDots';

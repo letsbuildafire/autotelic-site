@@ -1,27 +1,24 @@
 import { colors } from './color';
 import { grid } from './grid';
 
-export type Theme = Readonly<Partial<typeof global> & (typeof dark | typeof light)>;
-export type ThemeVariant = 'dark' | 'light';
+const light = {
+  is_dark: false,
+  colors: { ...colors.light },
+  grid: grid,
+};
 
 const dark = {
-  name: 'dark',
-  color: {...colors.dark},
+  is_dark: true,
+  colors: { ...colors.dark },
+  grid: grid,
 };
 
-const light = {
-  name: 'light',
-  color: {...colors.light},
-};
-
-const global = {
-  grid: {...grid},
-};
-
+export type Theme = Readonly<typeof light>;
 export const themes = {
-  global: {...global},
-  dark: {...dark},
-  light: {...light},
+  default: { ...light },
+  dark: { ...dark },
 };
 
-export { mq } from './media';
+export { GlobalStyles } from './GlobalStyles';
+export { mq, breakpoints, Breakpoint, BreakpointProps } from './media';
+export { default as styled } from './styled';

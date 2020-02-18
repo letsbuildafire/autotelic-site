@@ -28,11 +28,13 @@ const quoteTimeframeData = {
 };
 import * as quoteCommentData from './data-quote-comment.json';
 
-
 // menu icons
 import * as menuAboutData from './data-menu-about.json';
 import * as menuServicesData from './data-menu-services.json';
 import * as menuContactData from './data-menu-contact.json';
+
+// other icons
+import * as homeAutotelicData from './home-autotelic.json';
 
 export {
   aboutData,
@@ -50,4 +52,5 @@ export {
   quoteBudgetData,
   quoteTimeframeData,
   quoteCommentData,
+  homeAutotelicData,
 };

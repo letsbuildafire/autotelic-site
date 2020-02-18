@@ -1,26 +1,19 @@
-import {
+export type Props = {
+  readonly color?: string,
+};
+
+export {
   Button,
-  Props as ButtonProps,
 } from './Button';
 
-import {
+export {
   FlatButton,
 } from './FlatButton';
 
-import {
-  NavButton,
-  Props as NavButtonProps,
-} from './NavButton';
-
-import {
+export {
   OutlineButton,
 } from './OutlineButton';
 
 export {
-  Button,
-  ButtonProps,
-  FlatButton,
   NavButton,
-  NavButtonProps,
-  OutlineButton,
-};
+} from './NavButton';

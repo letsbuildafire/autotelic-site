@@ -1,20 +1,14 @@
-import * as React from 'react';
-
-// helpers
-import { connect, FieldAttributes, FormikContext } from 'formik';
+import React from 'react';
+import { useFormikContext, FormikContext } from 'formik';
 
 type Props = {
-  readonly children: React.ReactElement<any>,
+  readonly children: React.ReactNode,
   readonly show: (formik: FormikContext<any>) => boolean,
 };
 
-type PropsWithContext = Props & FieldAttributes<any>;
+export const ConditionalField: React.ReactNode = (props: Props) => {
+  const formik = useFormikContext<any>();
+  const { children, show } = props;
 
-const Field: React.SFC<PropsWithContext> = (props: PropsWithContext, context) => {
-  const { children, show, formik } = props;
-  return show(formik)
-    ? (children)
-    : null;
+  return show(formik) ? (children) : null;
 };
-
-export const ConditionalField = connect<Props>(Field);

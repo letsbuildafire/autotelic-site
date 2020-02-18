@@ -1,24 +1,43 @@
 import * as React from 'react';
-import { withTheme } from 'emotion-theming';
-import { css } from 'emotion';
-import { Theme } from '../../theme';
+import { styled } from '../../theme';
 
 type Props = {
-  readonly children: React.ReactNode,
-  readonly error?: boolean,
-  readonly theme?: Theme,
-} & React.HTMLProps<HTMLLabelElement>;
+  readonly meta: {
+    error?: string,
+    touched?: boolean,
+    value?: string,
+  },
+};
 
-const style = (props: Partial<Props>) => css`
-  ${props.className}
+export const Label = styled.label<Props>`
+  display: inline-block;
+  margin: 0;
+
+  color: ${({ theme }) => theme.colors.foreground};
+
+  font-size: 0.8125rem;
+  line-height: 1;
+
+  opacity: 0.5;
+
+  transform: translate3d(0.5rem, 0, 0);
+
+  will-change: transform;
+  transition: transform 200ms ease-out;
+
+  ${({ meta }) => !meta.value && `
+    opacity: 1;
+
+    transform: translate3d(3rem, 1.25rem, 0) scale(1.2307692307692308);
+  `}
+
+  ${({ meta, theme }) => meta.error && meta.touched && `
+    color: ${theme.colors.error};
+  `}
 `;
 
-const Element: React.SFC<Props> = (props: Props) => {
-  const { children, error, theme, ...rest} = props;
-  return (
-    <label className={style(props)} {...rest}>{children}</label>
-  );
+Label.defaultProps = {
+  meta: {
+    error: undefined,
+    touched: false,
 };
-Element.displayName = 'Label';
-
-export const Label = withTheme<Props, Theme>(Element);

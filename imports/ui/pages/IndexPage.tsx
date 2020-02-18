@@ -1,67 +1,100 @@
 import * as React from 'react';
-import { History, Location } from 'history';
-import { css } from 'emotion';
+import { motion } from 'framer-motion';
 
-// helpers
-import { TweenLite } from 'gsap';
+// routing
+import { RouteComponentProps } from '@reach/router';
 
 // components
-import { Page, Ref as PageRef } from '../components/Page';
-import Sandbox2 from '../components/Sandbox2';
+import { Page } from '../components/Page';
+import { PageGrid } from '../components/PageGrid';
+import { Item } from '../components/grid';
+import { Heading, Subheading } from '../typography';
 
-// effects
-import Tilt from '../effects/Tilt';
+// icons
+import { AboutIcon } from '../components/icons/animated/AboutIcon';
 
-type IndexPageProps = {
-  history?: History,
-  location?: Location,
-};
-
-const style = (props: IndexPageProps) => css``;
-
-export class IndexPage extends React.Component<IndexPageProps> {
-  private ref = React.createRef<PageRef>();
-
-  constructor(props) {
-    super(props);
-  }
-
-  componentWillAppear(cb) {
-    TweenLite.fromTo(this.ref.current, 0.3, {
-      opacity: 0,
-      x: -10
-    }, {
-      opacity: 1,
-      x: 0,
-      onComplete: cb
-    });
-  }
-
-  componentWillEnter(cb) {
-    TweenLite.fromTo(this.ref.current, 0.3, {
-      opacity: 0,
-      x: -10
-    }, {
-      opacity: 1,
-      x: 0,
-      onComplete: cb
-    });
-  }
-
-  componentWillLeave(cb) {
-    TweenLite.to(this.ref.current, 0.3, {
-      y: 100,
-      onComplete: cb,
-    });
-  }
-
-  render() {
-    return (
-      <Page className={style(this.props)} innerRef={this.ref}>
-        <Tilt className="tilt" options={{ max : 50 }} style={{ height: '100%', width: '100%' }}>
-          <Sandbox2></Sandbox2>
-        </Tilt>
-      </Page>
-    );
-  }
-}
+export const IndexPage: React.FC<RouteComponentProps> = (props) => (
+  <Page key="index" colors={[['darkblue', 'navy', 'midnightblue'], 'darkblue']}>
+    <PageGrid>
+      <Item
+        as="section"
+        stackOrder={2}
+        gridColumn={{
+          xs: '1 / 2',
+          sm: '1 / 3',
+        }}
+        gridRow={{
+          xs: '3 / 4',
+          sm: '2 / 3',
+        }}
+      >
+        <Heading
+          as={motion.h1}
+          variants={{
+            hidden: {
+              opacity: 0,
+              y: 20,
+            },
+            visible: {
+              opacity: 1,
+              y: 0,
+            }
+          }}
+          initial="hidden"
+          exit="hidden"
+        >
+          Who We Are
+        </Heading>
+        <Subheading
+          as={motion.h2}
+          variants={{
+            hidden: {
+              opacity: 0,
+              y: 20,
+            },
+            visible: {
+              opacity: 1,
+              y: 0,
+            }
+          }}
+          initial="hidden"
+          exit="hidden"
+        >
+          Lorem ipsum dolor sit, amet consectetur.
+        </Subheading>
+        <motion.p
+          variants={{
+            hidden: {
+              opacity: 0,
+              y: 20,
+            },
+            visible: {
+              opacity: 1,
+              y: 0,
+            }
+          }}
+          initial="hidden"
+          exit="hidden"
+        >
+          A team of strategists disguised as designers, developers
+          and good old fashioned storytellers. We combine creative
+          thinking with a really sharp backbone of great process,
+          intelligent execution and a relentless attention to detail.
+        </motion.p>
+      </Item>
+      <Item
+        as={AboutIcon}
+        stackOrder={1}
+        gridRow={{
+          xs: '1 / 2',
+          sm: '1 / 3',
+        }}
+        gridColumn={{
+          xs: '1 / 2',
+          sm: '4 / 5',
+        }}
+        alignSelf="start"
+      />
+    </PageGrid>
+  </Page>
+);

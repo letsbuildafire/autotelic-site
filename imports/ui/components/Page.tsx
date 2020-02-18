@@ -1,44 +1,46 @@
-import * as React from 'react';
-import { withTheme } from 'emotion-theming';
-import { css } from 'emotion';
-import { Theme } from '../theme';
-
-export type Ref = HTMLElement;
+import { motion } from 'framer-motion';
+import { radialGradient } from 'polished';
+import { styled } from '../theme';
 
 type Props = {
-  readonly children?: React.ReactNode,
-  readonly className?: string,
-  readonly innerRef?: React.Ref<Ref>,
-  readonly theme?: Theme,
-} & React.HTMLAttributes<HTMLElement>;
+  readonly colors?: [Array<string>, string], // [[...stops], fallback]
+};
 
-const style = (props: Partial<Props>) => css`
-  height: auto;
-  min-height: 100%;
+export const Page = styled<Props>(motion.section)`
+  height: 100%;
   width: 100%;
 
-  color: ${props.theme.color.body};
+  overflow: hidden;
 
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-
-  z-index: 1;
-  position: relative;
-
-  ${props.className}
+  color: ${({ theme }) => theme.colors.foreground};
+  ${({ colors, theme }) => colors && colors.length
+    ? radialGradient({
+        extent: 'circle at 100% 0'
+        colorStops: colors[0],
+        fallback: colors[1],
+      })
+    : `background: ${theme.colors.background};`
+  }
 `;
 
-const Element = React.forwardRef<Ref, Props>((props, ref) => {
-  const { className, children, innerRef, theme, ...rest } = props;
-
-  return (
-    <article ref={innerRef || ref} className={style(props)} {...rest}>
-      {children}
-    </article>
-  );
-});
-Element.displayName = 'Page';
-
-export const Page = withTheme<Props, Theme>(Element);
+Page.defaultProps = {
+  variants: {
+    hidden: {
+      opacity: 0,
+      transition: {
+        when: 'afterChildren',
+        staggerChildren: 0.1,
+      },
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: 'beforeChildren',
+        staggerChildren: 0.1,
+      },
+    },
+  },
+  initial: 'hidden',
+  animate: 'visible',
+  exit: 'hidden',
+};

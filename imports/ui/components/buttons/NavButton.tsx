@@ -1,34 +1,16 @@
 import * as React from 'react';
-import { withTheme } from 'emotion-theming';
-import { css } from 'emotion';
-import { Theme } from '../../theme';
 
-// components
-import { NavLink, NavLinkProps } from 'react-router-dom';
-import { style as button, Props as ButtonProps } from './Button';
+import { Link, LinkProps } from '@reach/router';
+import { Button, Props as ButtonProps } from '.';
 
-export type Props = {} & ButtonProps & NavLinkProps;
+type Props = {
+  readonly as?: React.ComponentType<ButtonProps>,
+} & LinkProps<{}>;
 
-const style = (props: Partial<Props>) => css`
-  ${button(props)}
+export const NavButton: React.FC<Props> = ({ as: Component, to, ...rest}) => (
+  <Link to={to}><Component {...rest}/></Link>
+);
 
-  ${props.className}
-`;
-
-class Element extends React.PureComponent<Props> {
-  public static displayName = 'NavButton';
-  public static defaultProps = {
-    color: 'teal',
-    exact: true,
-    strict: false,
-  };
-
-  render() {
-    const { children, className, exact, strict, to } = this.props;
-    return (
-      <NavLink className={style(this.props)} to={to} strict={strict} exact={exact}>{children}</NavLink>
-    );
-  }
-}
-
-export const NavButton = withTheme<Props, Theme>(Element);
+NavButton.defaultProps = {
+  as: Button,
+};

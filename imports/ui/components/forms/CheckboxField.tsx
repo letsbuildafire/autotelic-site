@@ -1,105 +1,80 @@
 import * as React from 'react';
-import { withTheme } from 'emotion-theming';
-import { css } from 'emotion';
-import { Theme } from '../../theme';
+import { styled, Theme } from '../../theme';
+
+// hooks
+import { useField } from 'formik';
 
 // components
-import { Field, FieldProps } from 'formik';
+import { HiddenInput as Input } from './HiddenInput';
+import { Field } from './Field';
 import { FieldFeedback } from './FieldFeedback';
-import { Label } from './Label';
 
 type Props = {
-  readonly className?: string,
   readonly label?: string,
-  readonly theme?: Theme,
+  readonly name: string,
+  readonly value: string,
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
-type PropsWithContext = Props & FieldProps<any>;
+export const CheckboxField: React.FC<Props> = (props) => {
+  const [ field, meta ] = useField({ type: 'checkbox', ...props });
+  const { className, id, label, name, ...rest } = props;
 
-const style = (props: Partial<PropsWithContext>) => css`
-  position: relative;
-  overflow: hidden;
-  margin-bottom: 0.75rem;
-`;
+  return (
+    <Field>
+      <Input type="checkbox" id={id || name} {...field}/>
+      <Label htmlFor={id || name} meta={meta}>
+        {label || field.value}
+      </Label>
+      <FieldFeedback error={meta.touched && meta.error}/>
+    </Field>
+  );
+};
 
-const inputStyle = (props: Partial<PropsWithContext>) => css`
-  z-index: -9999;
-  position: absolute;
-  top: 0;
-  left: 0;
-
-  clip: rect(0, 0, 0, 0);
-`;
-
-const labelStyle = (props: Partial<PropsWithContext>) => css`
-  background: white;
+const Label = styled.label`
+  background: ${({ theme }) => theme.colors.background};
   border-radius: 2rem;
 
-  color: gray;
+  cursor: pointer;
+  user-select: none;
+
+  display: flex;
+  flex-direction: row;
+
+  align-items: center;
+  justify-content: space-between;
+
+  color: ${({ theme }) => theme.colors.foreground};
   font-size: 0.875rem;
   font-weight: bold;
-  line-height: 1;
 
-  display: block;
-  padding: 1.25rem 2.5rem 1.25rem 3.125rem;
+  padding: 1.25rem 1.25rem 1.25rem 2.5rem;
 
-  user-select: none;
-  transition: background 200ms ease-out;
+  transition: background 400ms cubic-bezier(0.86, 0, 0.07, 1);
+  will-change: background;
 
   &:after {
     content: '+';
-    font-size: 2rem;
-    font-weight: normal;
-    line-height: 1.25rem;
 
-    height: 1.25rem;
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 20px;
 
     display: block;
-    position: absolute;
-    top: 50%;
-    right: 1.25rem;
+    height: 20px;
+    width: 20px;
 
-    transition: transform 200ms ease-out;
-    transform: translate3d(0, -50%, 0) rotate(90deg);
-    transform-origin; 50% 50%:
+    transform: rotate(90deg);
+    transform-origin: 10px 10px;
+
+    transition: transform 300ms cubic-bezier(0.86, 0, 0.07, 1);
+    will-change: transform;
   }
 
   input:checked + & {
     background: linear-gradient(to right, dodgerblue, teal);
-    color: white;
   }
 
   input:checked + &:after {
-    content: '-';
-    font-size: 2.75rem;
-    line-height: 0.75rem;
-
-    transform: translate3d(0, -50%, 0) rotate(180deg);
+    transform: rotate(225deg);
   }
 `;
-
-export class Element extends React.PureComponent<PropsWithContext> {
-  public static displayName = 'CheckboxInput';
-
-  render() {
-    const { id, field, form, label, theme } = this.props;
-    const invalid = !!form.errors[field.name];
-
-    return (
-      <div className={style(this.props)}>
-        <input className={inputStyle(this.props)} type="checkbox" id={id} {...field}/>
-        <Label className={labelStyle(this.props)} htmlFor={id} error={invalid}>{label}</Label>
-        <FieldFeedback error={invalid && form.errors[field.name]}/>
-      </div>
-    );
-  }
-}
-
-const FormikCheckboxField = (props: Props) => (
-  <Field
-    component={Element}
-    {...props}
-  />
-);
-
-export const CheckboxField = withTheme<Props, Theme>(FormikCheckboxField);

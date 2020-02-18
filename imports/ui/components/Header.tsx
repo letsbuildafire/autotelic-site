@@ -1,78 +1,44 @@
 import * as React from 'react';
-import { withTheme } from 'emotion-theming';
-import { css } from 'emotion';
-import { mq, themes, Theme } from '../theme';
+import { styled } from '../theme';
 
 // helpers
-import { FLUID_CONTAINER } from '../theme/grid';
+import { AtBreakpoint } from '../../Breakpoint';
 
-// elements
+// components
 import { Grid } from './grid';
+import { Menu } from './navigation/Menu';
+import { MobileMenu } from './navigation/MobileMenu';
+import { Branding } from '../components/Branding';
 
-type Props = {
-  readonly children?: React.ReactNode,
-  readonly className?: string,
-  readonly theme?: Theme,
+export const Header: React.FC = () => {
+  return (
+    <Grid
+      as={StyledHeader}
+      columns="auto 1fr"
+      areas="' branding navigation '"
+      fluid={false}
+      align="center"
+      justify="center"
+      justifyContent="space-between"
+    >
+      <AtBreakpoint xs down>
+        <MobileMenu/>
+      </AtBreakpoint>
+      <AtBreakpoint sm up>
+        <Menu/>
+      </AtBreakpoint>
+      <Branding/>
+    </Grid>
+  );
 };
 
-const style = (props: Partial<Props>) => css`
-  ${FLUID_CONTAINER}
+const StyledHeader = styled.header`
+  padding: ${({ theme }) => theme.grid.margin * 2}px;
 
-  background: rgba(255, 255, 255, 0.85);
-  color: ${props.theme.color.body};
-
-  height: 48px;
-  overflow: visible;
-
-  z-index: 5000;
   position: fixed;
   top: 0;
   right: 0;
   left: 0;
 
-  ${mq.sm(css`
-    background: none;
-
-    height: 64px;
-  `)}
-
-  ${props.className}
-`;
-
-class Element extends React.PureComponent<Props> {
-  public static displayName = 'Header';
-
-  render() {
-    const { children, className, theme, ...rest } = this.props;
-
-    return (
-      <Grid
-        element="header"
-        children={children}
-        className={style(this.props)}
-        columns={{
-          xs: '1fr 64px',
-          sm: '5% auto 1fr'
-        }}
-        areas={{
-          xs: `
-            "primary secondary"
-          `,
-          sm: `
-            ". primary secondary"
-          `
-        }}
-        gaps={{
-          xs: `${themes.global.grid.gutterWidth}px 0`,
-          sm: `${themes.global.grid.gutterWidth}px`,
-        }}
-        align="center"
-        justify="space-between"
-        justifyContent="start"
-        {...rest}
-      />
-    );
-  }
-}
-
-export const Header = withTheme<Props, Theme>(Element);
+  z-index: 5000;
+`

@@ -1,23 +1,4 @@
-import {
-  AnimatedIcon,
-  Props as AnimatedIconProps,
-  Ref as AnimatedIconRef,
-} from './AnimatedIcon';
-
-import {
-  SectionIcon,
-  Props as SectionIconProps,
-} from './SectionIcon';
-
-import {
-  MenuIcon,
-} from './MenuIcon';
-
-export {
-  AnimatedIcon,
-  AnimatedIconProps,
-  AnimatedIconRef,
-  SectionIcon,
-  SectionIconProps,
-  MenuIcon,
-};
+export { AboutMenuIcon } from './AboutMenuIcon';
+export { ContactMenuIcon } from './ContactMenuIcon';
+export { ServicesMenuIcon } from './ServicesMenuIcon';
+export { SectionIcon } from './animated/SectionIcon';

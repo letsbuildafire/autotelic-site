@@ -1,34 +1,21 @@
-import * as React from 'react';
-import { withTheme } from 'emotion-theming';
-import { css } from 'emotion';
-import { Theme } from '../../theme';
+import { styled } from '../../theme';
+import { shade } from 'polished';
 
-// components
-import { Button, Props as ButtonProps } from './Button';
+import { getColor } from './util';
+import { Button } from './Button';
 
-type Props = {
-  readonly children: React.ReactNode,
-  readonly className?: string,
-  readonly theme?: Theme,
-} & ButtonProps;
-
-const style = (props: Partial<Props>) => css`
+export const OutlineButton = styled(Button)`
   background: none;
-  border: 2px solid ${props.theme.color.body};
-  color: ${props.theme.color.body};
 
-  ${props.className}
+  box-sizing: border-box;
+  border-width: 3px;
+  border-style: solid;
+
+  color: ${getColor};
+
+  &:hover {
+    background: none;
+
+    color: ${props => shade('0.05', getColor(props))};
+  }
 `;
-
-const Element: React.SFC<Props> = (props: Props, context) => {
-  const { ref, children, theme, className, type, ...rest } = props;
-  return (
-    <Button innerRef={ref} type={type} className={style(props)} {...rest}>{children}</Button>
-  );
-};
-Element.displayName = 'OutlineButton';
-Element.defaultProps = {
-  type: 'button',
-};
-
-export const OutlineButton = withTheme<Props, Theme>(Element);

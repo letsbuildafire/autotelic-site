@@ -1,166 +1,181 @@
 import * as React from 'react';
-import { css } from 'emotion';
-import { map } from 'lodash';
+import { motion, AnimatePresence } from 'framer-motion';
+import { styled } from '../../theme';
 
 // helpers
-import * as TransitionGroupPlus from 'react-transition-group-plus';
-import { Formik, FormikActions, withFormik, FormikProps } from 'formik';
+import {
+  Formik,
+  FormikErrors,
+  FormikHelpers,
+  FormikProps,
+  FormikValues,
+  validateYupSchema,
+  yupToFormErrors,
+} from 'formik';
 
 // components
+import { Grid, Item } from '../grid';
 import { FlatButton } from '../buttons';
-import { Column, Row } from '../grid';
-import { Dots } from '../pagination';
-import { Props as StepProps } from './Step';
-
-type Step = React.ReactElement<StepProps>;
+import { WizardDots } from './WizardDots';
 
 type Props = {
-  readonly children: Array<Step> | Step,
-  readonly className?: string,
-  readonly handleSubmit?: (values: any, actions: FormikActions<any>) => void,
+  readonly children: React.ReactElement | Array<React.ReactElement>,
+  readonly onSubmit?: (values: FormikValues) => void,
   readonly initialValues?: {[key: string]: any},
-};
+} & FormikProps<any>;
 
-type State = Readonly<typeof initialState>;
-const initialState = {
-  direction: true,
-  step: 0,
-};
+export const Wizard: React.FC<Props> = (props) => {
+  const [ [ step, direction ], setStep ] = React.useState([0, 0]);
+  const {
+    children,
+    initialValues,
+    onSubmit = (values: FormikValues) => {},
+    ...rest
+  } = props;
 
-const style = (props: Partial<Props>) => css`
-  display: flex;
-  flex-direction: column;
+  const steps = React.Children.toArray(children);
 
-  width: 100%;
-  min-height: 100%;
-  align-items: center;
-  justify-content: center;
+  const next = () => setStep([Math.min(step + 1, steps.length - 1), 1]);
+  const previous = () => setStep([Math.max(step - 1, 0), -1]);
+  const last = () => (step === steps.length - 1);
 
-  ${props.className}
-`;
+  const validate = (values: FormikValues): FormikErrors<FormikValues> | void => {
+    if (!steps[step].props.schema) { return; }
 
-const controlsStyle = css`
-  z-index: 5;
-  position: absolute;
-  bottom: 1rem;
-  left: 50%;
-
-  display: flex;
-  flex-direction: row;
-
-  align-self: stretch;
-  justify-self: flex-end;
-  order: 1;
-
-  transform: translate3d(-50%, 0, 0);
-`;
-
-const paginationStyle = css`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: center;
-  justify-content: center;
-`;
-
-const dotsStyle = css`
-  z-index: 1;
-
-  flex: 0 0 auto;
-`;
-
-export class Wizard extends React.Component<Props, State> {
-  readonly state: State = initialState;
-
-  constructor(props: Props) {
-    super(props);
-
-    this.next = this.next.bind(this);
-    this.isLast = this.isLast.bind(this);
-    this.previous = this.previous.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  next() {
-    this.setState(state => ({
-      step: state.step + 1,
-      direction: true,
-    }));
-  }
-
-  previous() {
-    this.setState(state => ({
-      step: state.step - 1,
-      direction: false,
-    }));
-  }
-
-  isLast(): boolean {
-    const { step } = this.state;
-
-    const steps = React.Children.toArray(this.props.children);
-    return (step === steps.length - 1);
-  }
-
-  handleSubmit(values: any, actions: FormikActions<any>) {
-    const { children, handleSubmit } = this.props;
-    const { step } = this.state;
-
-    const steps = React.Children.toArray(children);
-    const last = (step === steps.length - 1);
-
-    if (last) {
-      return handleSubmit(values, actions);
-    } else {
-      this.next();
-      actions.setSubmitting(false);
+    try {
+      validateYupSchema(values, steps[step].props.schema, true);
+    } catch (err) {
+      return yupToFormErrors(err);
     }
-  }
+  };
 
-  render() {
-    const { children, initialValues } = this.props;
-    const { direction, step } = this.state;
+  const submit = (
+    values: FormikValues,
+    { setSubmitting }: FormikHelpers<FormikValues>
+  ): void => {
+    if (last()) { return onSubmit(values); }
 
-    const steps = React.Children.toArray(children);
+    setSubmitting(false);
+    next();
+  };
 
-    return (
-      <Formik
-        enableReinitialize={false}
-        initialValues={initialValues}
-        onSubmit={this.handleSubmit}
-        validateOnBlur={false}
-        validateOnChange={false}
-        validationSchema={(steps[step] as Step).props.schema || null}
-        render={formik => (
-          <TransitionGroupPlus
-            component="form"
-            transitionMode="out-in"
-            className={style(this.props)}
-            onSubmit={formik.handleSubmit}
-            validate="novalidate"
+  return (
+    <Formik
+      onSubmit={submit}
+      initialValues={initialValues}
+      validate={validate}
+    >
+      {({ handleSubmit, isSubmitting }) => (
+        <Grid
+          as={Form}
+          columns={{
+            xs: '100%',
+            sm: '400px 1fr',
+            lg: '640px 1fr',
+          }}
+          rows={{
+            xs: '80px 1fr 3fr 72px',
+            sm: '120px 1fr 72px',
+          }}
+          areas={{
+            xs: `
+              " secondary "
+              " secondary "
+              " step "
+              " navigation "
+            `,
+            sm: `
+              " . secondary "
+              " step secondary "
+              " navigation secondary "
+            `,
+          }}
+          rowGap="0"
+          fluid={false}
+          justify="center"
+          onSubmit={handleSubmit}
+          noValidate
+          {...rest}
+         >
+          <AnimatePresence initial={false} custom={direction}>
+            <Item
+              key={`step-${step}`}
+              as={FormStep}
+              alignSelf="stretch"
+              area="step"
+              custom={direction}
+            >
+              {steps[step]}
+            </Item>
+          </AnimatePresence>
+          <Item
+            as={Grid}
+            area="navigation"
+            align="center"
+            justify="center"
+            flow="column"
           >
-            {React.cloneElement((steps[step] as Step), {
-              formik,
-              transitionDirection: direction,
-            }) || null}
+            <FlatButton onClick={previous} disabled={step === 0}>
+              back
+            </FlatButton>
+            <WizardDots
+              current={steps[step].props.title}
+              items={steps.map(s => s.props.title)}
+            />
+            <FlatButton type="submit" disabled={isSubmitting}>
+              {last() ? 'submit' : 'next'}
+            </FlatButton>
+          </Item>
+        </Grid>
+      )}
+    </Formik>
+  );
+};
 
-            <Row className={controlsStyle}>
-              <Column className={paginationStyle}>
-                <FlatButton onClick={this.previous} disabled={step === 0}>back</FlatButton>
-                <Dots
-                  className={dotsStyle}
-                  current={step}
-                  diameter={20}
-                  items={map(steps, item => (item as Step).props.title)}
-                  />
-                <FlatButton type="submit" disabled={formik.isSubmitting}>
-                  {this.isLast() ? 'submit' : 'next'}
-                </FlatButton>
-              </Column>
-            </Row>
-          </TransitionGroupPlus>
-        )}
-      />
-    );
-  }
-}
+Wizard.defaultProps = {
+  enableReinitialize: false,
+  initialValues: {},
+  onSubmit: (values: FormikValues) => {},
+  validateOnBlur: false,
+  validateOnChange: false,
+};
+
+const Form = styled.form`
+  height: 100%;
+`;
+
+const FormStep = styled(motion.section)`
+  width: 100%;
+  margin: 0 auto;
+
+  user-select: none;
+`;
+
+FormStep.defaultProps = {
+  variants: {
+    initial: (dir: number) => ({
+      x: `${dir * 100}%`,
+      opacity: 0,
+      transition: {
+        damping: 200,
+      },
+    }),
+    hidden: (dir: number) => ({
+      x: `${dir * -100}%`,
+      opacity: 0,
+      transition: {
+        damping: 200,
+      },
+    }),
+    visible: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        damping: 200,
+      },
+    },
+  },
+  initial: 'initial',
+  animate: 'visible',
+  exit: 'hidden'
+};

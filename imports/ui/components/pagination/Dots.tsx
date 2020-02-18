@@ -1,178 +1,134 @@
 import * as React from 'react';
-import { withTheme } from 'emotion-theming';
-import { css } from 'emotion';
-import { isEqual } from 'lodash';
-import { Theme, ThemeVariant } from '../../theme';
+import { motion, useSpring, MotionProps } from 'framer-motion';
 
-// helpers
-import { TimelineLite, Elastic, Power2 } from 'gsap';
+const DOT_DIAMETER = 16;
+const DOT_SPACE = 10;
+const OUTLINE_WIDTH = 2;
 
+type Item = any;
 type Props = {
-  readonly className?: string,
-  readonly current: number,
+  readonly compare?: (items: Array<Item>, item: Item) => number,
+  readonly current: Item,
   readonly diameter?: number,
+  readonly items: Array<Item>,
   readonly space?: number,
-  readonly items: Array<string>,
-  readonly orientation?: 'vertical' | 'horizontal',
-  readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
+  readonly vertical?: boolean,
 };
 
-const style = (props: Partial<Props>) => css`
-  ${props.orientation === 'vertical'
-    ? `
-    width: ${props.diameter}px;
-    height: auto;
-    `
-    : `
-    width: auto;
-    height: ${props.diameter}px;
-    `
-  }
+export const Dots: React.FC<Props> = (props: Props) => {
+  const {
+    compare = (all: string[], it: string) => all.indexOf(it),
+    current,
+    diameter = DOT_DIAMETER,
+    items,
+    vertical = false,
+    space = DOT_SPACE,
+    ...rest
+  } = props;
 
-  color: ${props.theme.color.body};
+  const width = diameter + space;
+  const height = width * items.length;
 
-  ${props.className}
-`;
-
-export class Element extends React.Component<Props> {
-  public static defaultProps: Partial<Props> = {
-    diameter: 24,
-    items: [],
-    orientation: 'horizontal',
-    space: 6,
-    variant: 'light',
+  const getOffset = (idx: number) => {
+    return (idx * width) + (0.5 * width);
   };
-  private line = React.createRef<SVGLineElement>();
 
-  constructor(props) {
-    super(props);
-  }
+  const offset = useSpring(getOffset(compare(items, current)), { damping: 12 });
+  React.useEffect(() => {
+    offset.set(getOffset(compare(items, current)));
+  }, [current]);
 
-  componentDidMount() {
-    this.updateActiveDot();
-  }
-
-  shouldComponentUpdate(nextProps: Props) {
-    if (isEqual(this.props, nextProps)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  componentDidUpdate() {
-    this.updateActiveDot();
-  }
-
-  updateActiveDot() {
-    const { line } = this;
-    const { diameter, orientation, items, current } = this.props;
-    const offset = (current / items.length * 100) + (1 / items.length * 50);
-
-    const tl = new TimelineLite();
-    tl.kill(line.current);
-    tl.to(line.current, 0.3, {
-      attr: (orientation === 'vertical'
-        ? {
-          y2: `${offset}%`
-        }
-        : {
-          x2: `${offset}%`
-        }
-      ),
-      strokeWidth: 0,
-      ease: Power2.easeIn
-    }).to(line.current, 1, {
-      attr: (orientation === 'vertical'
-        ? {
-          y1: `${offset}%`
-        }
-        : {
-          x1: `${offset}%`
-        }
-      ),
-      ease: Elastic.easeOut.config(1, 0.76)
-    }, '+=0')
-      .to(line.current, 2, {
-      strokeWidth: diameter / 2,
-      ease: Elastic.easeOut.config(1, 0.8)
-    }, '-=1');
-
-    tl.timeScale(2);
-  }
-
-  render() {
-    const { items, diameter, space, ...props } = this.props;
-
-    const height = diameter + Math.round(diameter / 4);
-    const width = Math.round(items.length * height + (items.length * space));
-    const offset = idx =>
-      (idx / items.length * 100) + (1 / items.length * 50);
-
-    return (
-      <svg
-        className={style(this.props)}
-        xmlns="http://www.w3.org/2000/svg"
-        xmlnsXlink="http://www.w3.org/1999/xlink"
-        preserveAspectRatio="xMidYMid slice"
-        viewBox={props.orientation === 'vertical'
-          ? `0 0 ${height} ${width}`
-          : `0 0 ${width} ${height}`
-        }
-      >
-        <g>
-          <g fill="transparent" strokeWidth={Math.round(diameter / 8)}>
-            {items.map((item, idx) => (
-              <Dot
-                key={idx}
-                x={props.orientation === 'vertical' ? '50%' : `${offset(idx)}%`}
-                y={props.orientation === 'vertical' ? `${offset(idx)}%` : '50%'}
-                diameter={diameter}
-                label={item}
-              />
-            ))}
-          </g>
-          <line
-            ref={this.line}
-            className={dotStyle({})}
-            fill="none"
-            strokeWidth={Math.round(diameter / 8)}
-            strokeLinecap="round"
-            strokeMiterlimit={diameter}
-            x1={props.orientation === 'vertical' ? '50%' : `${offset(0)}%`}
-            y1={props.orientation === 'vertical' ? `${offset(0)}%` : '50%'}
-            x2={props.orientation === 'vertical' ? '50%' : `${offset(0)}%`}
-            y2={props.orientation === 'vertical' ? `${offset(0)}%` : '50%'}
+  return (
+    <motion.svg
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      preserveAspectRatio="xMidYMid slice"
+      height={`${vertical ? height : width}px`}
+      width={`${vertical ? width : height}px`}
+      viewBox={`0 0 ${vertical ? width : height} ${vertical ? height : width}`}
+      {...rest}
+    >
+      <g>
+        {items.map((item, idx) => (
+          <Dot
+            key={`dot-${idx}`}
+            radius={Math.round(diameter / 2)}
+            x={vertical ? '50%' : getOffset(idx)}
+            y={vertical ? getOffset(idx) : '50%'}
+            variants={{
+              hidden: {
+                opacity: 0,
+              },
+              visible: {
+                opacity: 1,
+              }
+            }}
           />
-        </g>
-      </svg>
-    );
-  }
-}
+        ))}
+        <Indicator
+          width={Math.round(diameter / 1.5)}
+          x={vertical ? '50%' : offset}
+          y={vertical ? offset : '50%'}
+          variants={{
+            hidden: {
+              opacity: 0,
+              scale: 0,
+            },
+            visible: {
+              opacity: 1,
+              scale: 1,
+              transition: {
+                delay: 0.5,
+              }
+            }
+          }}
+        />
+      </g>
+    </motion.svg>
+  );
+};
 
-export const Dots = withTheme<Props, Theme>(Element);
-
-type DotProps = {
-  label: string,
-  diameter: number,
+type IndicatorProps = {
+  width: number,
   x: number | string,
   y: number | string,
-};
-
-const dotStyle = (props: Partial<DotProps>) => css`
-  stroke: currentColor;
-
-  transition: color 200ms ease-out;
-`;
-
-const Dot: React.SFC<DotProps> = (props: DotProps, context) => (
-  <circle
-    cx={props.x}
-    cy={props.y}
-    className={dotStyle(props)}
+} & MotionProps;
+const Indicator = ({ width, x, y, ...rest }: IndicatorProps) => (
+  <motion.line
     fill="none"
-    r={Math.round(props.diameter / 2)}
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeWidth={width}
     shapeRendering="geometricPrecision"
+    x1={x}
+    x2={x}
+    y1={y}
+    y2={y}
+    {...rest}
   />
 );
+
+type DotProps = {
+  radius: number,
+  x: number | string,
+  y: number | string,
+} & MotionProps;
+const Dot = ({ x, y, radius, ...rest }: DotProps) => (
+  <motion.circle
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={OUTLINE_WIDTH}
+    shapeRendering="geometricPrecision"
+    r={radius}
+    cx={x}
+    cy={y}
+    {...rest}
+  />
+);
+
+Dots.defaultProps = {
+  compare: (all: string[], it: string) => all.indexOf(it),
+  diameter: DOT_DIAMETER,
+  space: DOT_SPACE,
+  vertical: false,
+};

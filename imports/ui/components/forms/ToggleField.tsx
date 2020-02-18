@@ -1,68 +1,70 @@
 import * as React from 'react';
-import { withTheme } from 'emotion-theming';
-import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../../theme';
+import { motion } from 'framer-motion';
+import { styled } from '../../theme';
+
+// hoooks
+import { useField } from 'formik';
 
 // components
-import { Field, FieldProps } from 'formik';
+import { HiddenInput as Input } from './HiddenInput';
+import { Field } from './Field';
 import { FieldFeedback } from './FieldFeedback';
-import { Label } from './Label';
 
 type Props = {
   readonly labelOn?: string,
   readonly labelOff?: string,
-  readonly theme?: Theme,
-  readonly variant?: ThemeVariant,
+  readonly name: string,
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
-type PropsWithContext = Props & FieldProps<any>;
+export const ToggleField: React.FC<Props> = (props) => {
+  const [ field, meta ] = useField({ type: 'checkbox', ...props });
+  const { id, name, labelOn, labelOff, ...rest } = props;
 
-const style = (props: Partial<PropsWithContext>) => css`
-  position: relative;
-  margin-bottom: 0.75rem;
-  padding-top: 1rem;
+  const toggleVariants = {
+    unchecked: {
+      transform: 'translate3d(0rem, 0, 0)',
+    },
+    checked: {
+      transform: 'translate3d(1.75rem, 0, 0)',
+    }
+  };
 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: stretch;
-`;
+  return (
+    <Field>
+      <Label htmlFor={id || name} error={meta.error}>
+        <Input type="checkbox" id={id} {...field}/>
+        {labelOff && <span>{labelOff}</span>}
+        <Toggle>
+          <Knob
+            as={motion.span}
+            variants={toggleVariants}
+            initial={field.checked ? 'checked' : 'unchecked'}
+            animate={field.checked ? 'checked' : 'unchecked'}
+            exit="exit"
+          />
+        </Toggle>
+        {labelOn && <span>{labelOn}</span>}
+      </Label>
+      <FieldFeedback error={meta.touched && meta.error}/>
+    </Field>
+  );
+};
 
-const inputStyle = (props: Partial<PropsWithContext>) => css`
-  z-index: -9999;
-  position: absolute;
-  top: 0;
-  left: 0;
-
-  clip: rect(0, 0, 0, 0);
-`;
-
-const labelStyle = css`
+const Label = styled.label`
   display: flex;
   flex-direction: row;
+
   align-items: center;
   justify-content: center;
-`;
 
-const labelTextStyle = css`
-  color: white;
+  color: inherit;
+
   font-size: 1rem;
   font-weight: bold;
-  line-height: 1rem;
-
-  transition: color 300ms ease-out;
+  line-height: 1;
 `;
 
-const labelTextActiveStyle = css`
-  ${labelTextStyle}
-
-  color: dodgerblue;
-`;
-
-const toggleStyle = (props: Partial<PropsWithContext>) => css`
-  background: linear-gradient(to right, teal, dodgerblue 40%, dodgerblue 60%, #AD00A8);
-  background-size: 400% 400%;
-  background-position: 100% 50%;
+const Toggle = styled.div`
   border-radius: 2rem;
   box-shadow:
       inset 0 3px 0 rgba(0, 0, 0, 0.125),
@@ -76,64 +78,52 @@ const toggleStyle = (props: Partial<PropsWithContext>) => css`
   position: relative;
   margin-right: 0.75rem;
   margin-left: 0.75rem;
-  transition: background-position 280ms ease-out;
 
   cursor: pointer;
+`;
 
-  input:checked ~ & {
-    background-position: 0% 50%;
+const Knob = styled.span`
+  position:relative;
+  margin: 0;
+
+  display: block;
+  height: 1.5rem;
+  width: 1.5rem;
+
+  overflow: visible;
+
+  will-change: transform;
+
+  &:before{
+    content: '';
+
+    background: linear-gradient(to right, teal, dodgerblue);
+
+    display: block;
+    height: 2rem;
+    width: 7rem;
+
+    position: absolute;
+    margin: auto;
+    left: 50%;
+    top: 50%;
+
+    transform: translate3d(-50%, -50%, 0);
   }
 
   &:after {
     content: '';
+
+    position: relative;
+
     background: #e0e0e0;
     background: radial-gradient(circle at center, #e0e0e0, #ffffff 70%);
     border: 2px solid #fafafa;
     border-radius: 50%;
 
     display: block;
-    height: 1.5rem;
-    width: 1.5rem;
 
-    position: relative;
-    margin: 0;
-
-    transition: all 200ms ease-out;
-    transform: translate3d(0, 0, 0);
-  }
-
-  input:checked ~ &:after {
-    transform: translate3d(1.75rem, 0, 0);
+    height: 100%;
+    width: 100%;
   }
 `;
-
-class Element extends React.PureComponent<PropsWithContext> {
-  public static displayName = 'ToggleInput';
-
-  render() {
-    const { id, form, field, labelOn, labelOff, ...rest} = this.props;
-    const { value, ...fieldProps} = field;
-    const invalid = !!form.errors[field.name];
-
-    return (
-      <div className={style(this.props)}>
-        <Label className={labelStyle} htmlFor={id} error={invalid}>
-          <input className={inputStyle(this.props)} type="checkbox" id={id} checked={field.value} {...fieldProps}/>
-          {labelOff && <span className={field.value ? labelTextStyle : labelTextActiveStyle}>{labelOff}</span>}
-          <div className={toggleStyle(this.props)}/>
-          <span className={field.value ? labelTextActiveStyle : labelTextStyle}>{labelOn}</span>
-        </Label>
-        <FieldFeedback error={invalid && form.errors[field.name]}/>
-      </div>
-    );
-  }
-}
-
-const FormikToggleField = (props: Props) => (
-  <Field
-    component={Element}
-    {...props}
-  />
-);
-
-export const ToggleField = withTheme<Props, Theme>(FormikToggleField);

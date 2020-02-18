@@ -1,33 +1,37 @@
-import * as React from 'react';
-import { withTheme } from 'emotion-theming';
-import { css } from 'emotion';
-import { Theme } from '../../theme';
+import { styled, mq } from '../../theme';
+import { lighten } from 'polished';
 
-// components
-import { Button, Props } from './Button';
+import { getColor } from './util';
 
-export const style = (props: Partial<Props>) => css`
+type Props = { readonly color?: string };
+export const FlatButton = styled.button<Props>`
   background: none;
-  color: inherit;
+  border: none;
+  color: ${props => getColor(props, 'flat')};
 
-  min-width: 8rem;
+  padding: 1.25rem 0.5rem;
+
+  font-size: 0.625rem;
+  font-weight: bold;
+  line-height: 1;
+  text-transform: uppercase;
+  text-align: center;
+
+  transition: color 200ms ease-out;
 
   &:hover {
-    background: none;
+    color: ${props => lighten(0.25, getColor(props, 'flat'))};
   }
 
-  ${props.className}
+  &:disabled {
+    opacity: 0.3;
+  }
+
+  ${mq.md}{
+    font-size: 0.8125rem;
+  }
 `;
 
-const Element: React.SFC<Props> = (props: Props, context) => {
-  const { children, className, ref, theme, type, ...rest } = props;
-  return (
-    <Button innerRef={ref} type={type} className={style(props)} {...rest}>{children}</Button>
-  );
-};
-Element.displayName = 'FlatButton';
-
-export const FlatButton = withTheme<Props, Theme>(Element);
 FlatButton.defaultProps = {
   type: 'button',
 };

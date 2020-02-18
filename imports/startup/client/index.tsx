@@ -2,16 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import * as React from 'react';
 import { render } from 'react-dom';
 
-// helpers
-import { debounce } from 'lodash';
-
 // stylesheets
 import 'sanitize.css';
-import '../../ui/theme/global';
-
-import { AppContainer } from '../../ui/containers/AppContainer';
+import { App } from '../../ui/containers/App';
 
 Meteor.startup(() => {
-  const app = document.getElementById('app');
-  render(<AppContainer/>, app);
+  render(<App />, document.getElementById('app'));
 });

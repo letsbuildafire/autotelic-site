@@ -1,162 +1,76 @@
 import * as React from 'react';
-import { withTheme } from 'emotion-theming';
-import { css } from 'emotion';
-import { Theme, ThemeVariant } from '../../theme';
+import { styled, mq, Breakpoint, BreakpointProps } from '../../theme';
+import { FLUID_CONTAINER, CONTAINER } from '../../theme/grid';
 
-// helpers
-import { mq, Breakpoints } from '../../theme/media';
+import { getProperty } from './util';
 
-export type Ref = HTMLElement;
+type Display = 'grid' | 'inline-grid' | 'subgrid';
+type Position = 'normal' | 'start' | 'center' | 'end' | 'stretch' | 'baseline';
+type PositionContent = Position | 'auto' | 'space-between' | 'space-around';
 
-export type Props = {
-  readonly align?: {[key in Breakpoints]?: string} | string,
-  readonly alignContent?: {[key in Breakpoints]?: string} | string,
-  readonly areas?: {[key in Breakpoints]?: string } | string,
-  readonly children: React.ReactNode,
-  readonly className?: string,
-  readonly columns?: {[key in Breakpoints]?: string } | string,
-  readonly display?: {[key in Breakpoints]?: string} | string,
-  readonly element?: string,
-  readonly flow?: {[key in Breakpoints]?: string}  | string,
-  readonly gaps?: {[key in Breakpoints]?: string } | string,
-  readonly innerRef?: React.Ref<Ref>,
-  readonly justify?: {[key in Breakpoints]?: string} | string,
-  readonly justifyContent?: {[key in Breakpoints]?: string} | string,
-  readonly rows?: {[key in Breakpoints]?: string } | string,
-  readonly theme?: Theme,
+type Props = {
+  readonly align?: BreakpointProps<Position> | Position,
+  readonly alignContent?: BreakpointProps<PositionContent> | PositionContent,
+  readonly areas?: BreakpointProps<string> | string,
+  readonly as?: string | React.ReactElement,
+  readonly columns?: BreakpointProps<string> | string,
+  readonly columnGap?: BreakpointProps<string> | string,
+  readonly flow?: BreakpointProps<string>  | string,
+  readonly fluid?: boolean,
+  readonly gaps?: BreakpointProps<string> | string,
+  readonly justify?: BreakpointProps<Position> | Position,
+  readonly justifyContent?: BreakpointProps<PositionContent> | PositionContent,
+  readonly layout?: BreakpointProps<Display> | Display,
+  readonly rows?: BreakpointProps<string> | string,
+  readonly rowGap?: BreakpointProps<string> | string,
 };
 
-const atBreakpoint = (breakpoint: Breakpoints, props: Partial<Props>) => css`
-  ${props.display && props.display[breakpoint] && `
-    display: ${props.display[breakpoint]};
-  `}
+const style = (breakpoint: Breakpoint | null, props: Props) => `
+  ${props.layout ? getProperty('display', props.layout, breakpoint) : ''}
 
-  ${props.columns && props.columns[breakpoint] && `
-    grid-template-columns: ${props.columns[breakpoint]};
-  `}
+  ${props.columns ? getProperty('grid-template-columns', props.columns, breakpoint) : ''}
+  ${props.rows ? getProperty('grid-template-rows', props.rows, breakpoint) : ''}
+  ${props.areas ? getProperty('grid-template-areas', props.areas, breakpoint) : ''}
+  ${props.flow ? getProperty('grid-auto-flow', props.flow, breakpoint) : ''}
+  ${props.gaps ? getProperty('gap', props.gaps, breakpoint) : ''}
+  ${props.columnGap ? getProperty('column-gap', props.columnGap, breakpoint) : ''}
+  ${props.rowGap ? getProperty('row-gap', props.rowGap, breakpoint) : ''}
 
-  ${props.rows && props.rows[breakpoint] && `
-    grid-template-rows: ${props.rows[breakpoint]};
-  `}
-
-  ${props.areas && props.areas[breakpoint] && `
-    grid-template-areas: ${props.areas[breakpoint]};
-  `}
-
-  ${props.gaps && props.gaps[breakpoint] && `
-    grid-gap: ${props.gaps[breakpoint]};
-  `}
-
-  ${props.align && props.align[breakpoint] && `
-    align-items: ${props.align[breakpoint]};
-  `}
-
-  ${props.justify && props.justify[breakpoint] && `
-    justify-items: ${props.justify[breakpoint]};
-  `}
-
-  ${props.alignContent && props.alignContent[breakpoint] && `
-    align-content: ${props.alignContent[breakpoint]};
-  `}
-
-  ${props.justifyContent && props.justifyContent[breakpoint] && `
-    justify-content: ${props.justifyContent[breakpoint]};
-  `}
+  ${props.align ? getProperty('align-items', props.align, breakpoint) : ''}
+  ${props.alignContent ? getProperty('align-content', props.alignContent, breakpoint) : ''}
+  ${props.justify ? getProperty('justify-items', props.justify, breakpoint) : ''}
+  ${props.justifyContent ? getProperty('justify-content', props.justifyContent, breakpoint) : ''}
 `;
 
-const baseValue = (breakpoint: Breakpoints, prop: any, value: any = false): any => {
-  if (typeof prop === 'string') {
-    return prop;
+export const Grid = styled.div<Props>`
+  ${({ fluid }) => fluid ? FLUID_CONTAINER : CONTAINER}
+
+  /* base styles */
+  gap: ${({ theme }) => theme.grid.gutter}px;
+
+  /* use null breakpoint for base and string-value properties */
+  ${props => style(null, props)}
+
+  ${props => style('xs', props)}
+
+  ${mq.sm}{
+    ${props => style('sm', props)}
   }
 
-  return (breakpoint in prop) ? prop[breakpoint] : value;
-};
+  ${mq.md}{
+    ${props => style('md', props)}
+  }
 
-const style = (props: Partial<Props>) => css`
-  display: ${baseValue('xs', props.display, 'grid')};
+  ${mq.lg}{
+    ${props => style('lg', props)}
+  }
 
-  ${props.columns && baseValue('xs', props.columns) && `
-    grid-template-columns: ${baseValue('xs', props.columns)};
-  `}
-
-  ${props.rows && baseValue('xs', props.rows) && `
-    grid-template-rows: ${baseValue('xs', props.rows)};
-  `}
-
-  ${props.gaps && baseValue('xs', props.gaps) && `
-    grid-gap: ${baseValue('xs', props.gaps)};
-  `}
-
-  ${props.areas && baseValue('xs', props.areas) && `
-    grid-template-areas: ${baseValue('xs', props.areas)};
-  `}
-
-  ${props.align && baseValue('xs', props.align) && `
-    align-items: ${baseValue('xs', props.align)};
-  `}
-
-  ${props.justify && baseValue('xs', props.justify) && `
-    justify-items: ${baseValue('xs', props.justify)};
-  `}
-
-  ${props.alignContent && baseValue('xs', props.alignContent) && `
-    align-content: ${baseValue('xs', props.alignContent)};
-  `}
-
-  ${props.justifyContent && baseValue('xs', props.justifyContent) && `
-    justify-content: ${baseValue('xs', props.justifyContent)};
-  `}
-
-  ${mq.sm(css`
-    ${atBreakpoint('sm', props)}
-  `)}
-
-  ${mq.md(css`
-    ${atBreakpoint('md', props)}
-  `)}
-
-  ${mq.lg(css`
-    ${atBreakpoint('lg', props)}
-  `)}
-
-  ${mq.xl(css`
-    ${atBreakpoint('xl', props)}
-  `)}
-
-  ${props.className}
+  ${mq.xl}{
+    ${props => style('xl', props)}
+  }
 `;
 
-const Element = React.forwardRef<Ref, Props>((props, ref) => {
-  const {
-    align,
-    alignContent,
-    areas,
-    children,
-    className,
-    columns,
-    display,
-    element,
-    flow,
-    gaps,
-    innerRef,
-    justify,
-    justifyContent,
-    rows,
-    theme,
-    ...pass
-  } = props;
-
-  const properties = {
-    ...pass,
-    ref: innerRef || ref,
-    className: style(props),
-  };
-
-  return React.createElement(element, properties, children);
-});
-
-export const Grid = withTheme<Props, Theme>(Element);
 Grid.defaultProps = {
-  display: 'grid',
-  element: 'div',
+  fluid: true,
+  layout: 'grid',
 };

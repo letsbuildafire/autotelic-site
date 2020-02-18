@@ -1,4 +1,7 @@
 {
+  "extends": [
+    "tslint-react-hooks"
+  ],
   "rules": {
     "align": [
       true,
@@ -46,7 +49,7 @@
     ],
     "no-construct": true,
     "no-debugger": true,
-    "no-default-export": true,
+    "no-default-export": false,
     "no-duplicate-variable": true,
     "no-empty": false,
     "no-eval": true,
@@ -60,10 +63,6 @@
     "no-switch-case-fall-through": true,
     "no-trailing-whitespace": true,
     "no-unused-expression": true,
-    "no-unused-variable": [
-      true,
-      "allow-fast-null-checks"
-    ],
     "no-use-before-declare": false,
     "no-var-keyword": true,
     "no-var-requires": true,
@@ -80,9 +79,10 @@
       true,
       "single",
       "jsx-double",
-      "avoid-escape"   
+      "avoid-escape"
     ],
     "radix": true,
+    "react-hooks-nesting": "error",
     "semicolon": [
       true,
       "always"

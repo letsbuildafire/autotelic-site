@@ -31,10 +31,5 @@ node_modules
 *.tar.gz
 *.swp
 
-# VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
+*.sublime-project
+*.sublime-workspace

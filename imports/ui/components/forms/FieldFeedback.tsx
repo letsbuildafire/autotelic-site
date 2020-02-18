@@ -1,22 +1,15 @@
 import * as React from 'react';
-import { withTheme } from 'emotion-theming';
-import { css } from 'emotion';
-
-// helpers
-import { FormikErrors } from 'formik';
+import { css } from '@emotion/core';
 
 type Props = {
   readonly className?: string,
-  readonly error?: string | FormikErrors<any>,
-  readonly theme?: any,
+  readonly error?: string,
 };
 
-const style = (props: Partial<Props>) => css`
-  ${props.className}
-`;
+export const FieldFeedback: React.FC<Props> = (props: Props, context) => {
+  const { error, ...rest } = props;
 
-const Feedback: React.SFC<Props> = (props: Props) => props.error
-  ? (<div className={style(props)}>{props.error}</div>)
-  : null;
+  const style = (theme: Theme) => css``;
 
-export const FieldFeedback = withTheme<Props>(Feedback);
+  return error ? ( <div css={style} {...rest}>{error}</div> ) : null;
+};

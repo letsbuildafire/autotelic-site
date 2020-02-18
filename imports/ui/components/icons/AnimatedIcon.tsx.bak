@@ -1,0 +1,229 @@
+import * as React from 'react';
+import { css } from '@emotion/core';
+import { mq, BreakpointProps, Breakpoint } from '../../theme';
+import { isEqual } from 'lodash';
+
+// helpers
+import * as Lottie from 'lottie-web';
+
+type dimension = string | number;
+type direction = 1 | -1;
+type event = { event: string, callback: ([args]: any) => void };
+
+export type Ref = HTMLDivElement;
+export type Props = {
+  readonly animationData: any,
+  readonly autoplay?: boolean,
+  readonly className?: string,
+  readonly events?: Array<event>,
+  readonly height?: BreakpointProps<dimension> | dimension,
+  readonly loop?: boolean,
+  readonly renderer?: 'svg' | 'canvas',
+  readonly rendererSettings?: {
+    preserveAspectRatio?: string,
+    scaleMode?: string,
+  }
+  readonly speed?: number,
+  readonly width?: BreakpointProps<dimension> | dimension,
+};
+
+type State = typeof initialState;
+const initialState = {
+  complete: false,
+  direction: 1,
+  events: [] as Array<event>,
+  paused: false,
+  speed: 0.25,
+  stopped: true,
+};
+
+const getProperty = (
+  rule: string,
+  prop: any | BreakpointProps<any>,
+  breakpoint: Breakpoint | null = null,
+): string | null => {
+  if (breakpoint === null) {
+    return (typeof prop !== 'object') ? `${rule}: ${prop};` : null;
+  }
+
+  if (typeof prop !== 'object') { return null; }
+  return (prop && breakpoint in prop) ? `${rule}: ${prop[breakpoint]};` : null;
+};
+
+export class AnimatedIcon extends React.Component<Props, State> {
+  public static defaultProps: Partial<Props> = {
+    autoplay: true,
+    height: 'auto',
+    loop: false,
+    renderer: 'svg',
+    rendererSettings: {
+      preserveAspectRatio: 'xMidYMid slice',
+      scaleMode: 'noScale',
+    },
+    width: 'auto',
+  };
+
+  private canvas: React.RefObject<Ref>;
+  private animation: any;
+
+  constructor(props: Props) {
+    super(props);
+
+    const { autoplay, events, speed } = props;
+    this.state = {
+      ...initialState,
+      events: events || [
+        {
+          event: 'DOMLoaded',
+          callback: () => this.startAnimation(),
+        },
+        {
+          event: 'complete',
+          callback: () => this.endAnimation(),
+        }
+      ],
+      paused: !autoplay,
+      stopped: !autoplay,
+      speed: !!speed ? speed : initialState.speed,
+    };
+
+    this.canvas = React.createRef<Ref>();
+  }
+
+  componentDidMount() {
+    const {
+      children,
+      className,
+      events,
+      height,
+      width,
+      ...params
+    } = this.props;
+
+    this.loadAnimation(params);
+    this.registerEvents();
+  }
+
+  componentDidUpdate(prev: Props) {
+    const { animationData } = this.props;
+
+    if (!isEqual(animationData, prev.animationData)) {
+      this.destroy();
+      this.loadAnimation(this.props);
+    }
+  }
+
+  componentWillUnmount() {
+    this.deRegisterEvents();
+
+    this.destroy();
+    this.animation = null;
+  }
+
+  public loadAnimation(props: Partial<Props>) {
+    this.animation = Lottie.loadAnimation({
+      container: this.canvas.current,
+      ...props
+    });
+  }
+
+  public startAnimation() {
+    const { autoplay } = this.props;
+    const { speed } = this.state;
+
+    this.animation.setSpeed(speed);
+
+    if (autoplay) {
+      this.animation.play();
+    }
+  }
+
+  public endAnimation() {
+    this.animation.pause();
+  }
+
+  public play() {
+    this.animation.play();
+  }
+
+  public pause() {
+    this.animation.pause();
+  }
+
+  public stop() {
+    this.animation.stop();
+  }
+
+  public setSpeed(speed: number) {
+    this.setState({speed});
+
+    this.animation.setSpeed(speed);
+  }
+
+  public setDirection(dir: direction) {
+    this.setState({direction: dir});
+
+    this.animation.setDirection(dir);
+  }
+
+  render() {
+    const { className, height, width,} = this.props;
+
+    const style = (theme: Theme) => css`
+      ${getProperty('height', height)};
+      ${getProperty('width', width)};
+
+      overflow: visible;
+      margin: 0 auto;
+
+      outline: none;
+      user-select: none;
+
+      & path {
+        fill: currentColor;
+        stroke: currentColor;
+      }
+
+      ${getProperty('height', height, 'xs')};
+      ${getProperty('width', width, 'xs')};
+
+      ${mq.sm}{
+        ${getProperty('height', height, 'sm')};
+        ${getProperty('width', width, 'sm')};
+      }
+
+      ${mq.md}{
+        ${getProperty('height', height, 'md')};
+        ${getProperty('width', width, 'md')};
+      }
+
+      ${mq.lg}{
+        ${getProperty('height', height, 'lg')};
+        ${getProperty('width', width, 'lg')};
+      }
+
+      ${mq.xl}{
+        ${getProperty('height', height, 'xl')};
+        ${getProperty('width', width, 'xl')};
+      }
+    `;
+
+    return (
+      <div ref={this.canvas} css={style} tabIndex={0} className={className}/>
+    );
+  }
+
+  private destroy() {
+    this.animation.destroy();
+  }
+
+  private registerEvents() {
+    const { events } = this.state;
+    events.forEach(ev => this.animation.addEventListener(ev.event, ev.callback));
+  }
+
+  private deRegisterEvents() {
+    const { events } = this.state;
+    events.forEach(ev => this.animation.removeEventListener(ev.event, ev.callback));
+  }
+}

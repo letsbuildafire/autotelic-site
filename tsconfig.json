@@ -1,28 +1,47 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "alwaysStrict": true,
-    "sourceMap": true,
-    "jsx": "react",
-    "lib": ["es5", "es2017", "dom"],
+    /* Basic Options */
+    "target": "es2018",
+    "module": "esNext",
+    "lib": ["esnext", "dom"],
     "allowJs": true,
-    "noImplicitAny": false,
-    "strictNullChecks": false,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true
+    "checkJs": false,
+    "jsx": "preserve",
+    "incremental": true,
+    "noEmit": true,
+
+    /* Strict Type-Checking Options */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+
+    /* Additional Checks */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false,
+    "allowSyntheticDefaultImports": false,
+
+    /* Module Resolution Options */
+    "baseUrl": ".",
+    "paths": {
+      /* Support absolute /imports/* with a leading '/' */
+      "/*": ["*"]
+    },
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "types": ["node"],
+    "esModuleInterop": true,
+    "preserveSymlinks": true,
+    "plugins": [
+        {
+            "name": "typescript-styled-plugin"
+        }
+    ]
   },
-  "include": [
-    "client/**/*",
-    "server/**/*"
-  ],
   "exclude": [
-    "node_modules",
-    ".meteor"
-  ],
-  "baseUrl": ".",
-  "paths": {
-    "*": ["*"]
-  }
+    "./.meteor/**",
+    "./packages/**",
+    "node_modules"
+  ]
 }

@@ -1,64 +1,33 @@
 import * as React from 'react';
-import { withTheme } from 'emotion-theming';
-import { css } from 'emotion';
-import { Theme } from '../../theme';
 
 // components
-import { FieldArray, FieldProps } from 'formik';
-import { Element } from './CheckboxField';
+import { CheckboxField } from './CheckboxField';
+
+type Option = {
+  label?: string,
+  value: string
+};
 
 type Props = {
-  readonly className?: any,
-  readonly options: Array<{id: string, label: string}>,
-  readonly theme?: Theme,
+  readonly name: string,
+  readonly options: Array<Option>,
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
-type PropsWithContext = Props & FieldProps<any>;
+export const CheckboxGroup: React.FC<Props> = (props) => {
+  const { id, name, options, ...rest } = props;
 
-const style = (props: Partial<PropsWithContext>) => css`
-  position: relative;
-  margin-bottom: 0.75rem;
-  padding-top: 1rem;
-`;
-
-class ElementGroup extends React.PureComponent<PropsWithContext> {
-  public static displayName = 'CheckboxInputGroup';
-
-  render() {
-    const { name, options, ...rest} = this.props;
-
-    return (
-      <FieldArray
-        name={name}
-        render={({push, remove, form}) => (
-          <div>
-            {options.map((option, i) => (
-              <Element
-                key={`opt-${option.id}`}
-                id={`opt-${option.id}`}
-                label={option.label}
-                form={form}
-                field={{
-                  name: `${name}[${i}]`,
-                  value: option.id,
-                  checked: form.values[name].includes(option.id),
-                  onChange: (e) => {
-                    if (e.target.checked) {
-                      push(option.id);
-                    } else {
-                      const j = form.values[name].indexOf(option.id);
-                      remove(j);
-                    }
-                  },
-                }}
-                {...rest}
-              />
-            ))}
-          </div>
-        )}
-      />
-    );
-  }
-}
-
-export const CheckboxGroup = withTheme<Props, Theme>(ElementGroup);
+  return (
+    <>
+      {options.map((option: Option) => (
+        <CheckboxField
+          key={`opt-${option.value}`}
+          name={name}
+          id={`${name}-opt-${option.value}`}
+          label={option.label || option.value}
+          value={option.value}
+          {...rest}
+        />
+      ))}
+    </>
+  );
+};
